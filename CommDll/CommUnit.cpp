@@ -1,6 +1,6 @@
 #include "stdafx.h"
+#include "CommDll.h"
 #include "CommUnit.h"
-
 
 CommUnit::CommUnit()
 {
