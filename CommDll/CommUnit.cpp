@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CommDll.h"
 #include "CommUnit.h"
+#include "inline.h"
 
 CommUnit::CommUnit()
 	:mComHandle(INVALID_HANDLE_VALUE)
@@ -17,9 +18,7 @@ BOOL CommUnit::Open(int comNumber) {
 	BOOL success = TRUE;
 
 	TCHAR comName[BUFSIZ] = {0};
-	if ((_stprintf_s(comName, BUFSIZ, _T("COM%d"), comNumber)) == -1) {
-		success = FALSE;
-	}
+	success = createCommNumber(comName, BUFSIZ, comNumber);
 	if (success) {
 		mComHandle = ::CreateFile(
 			comName, /* シリアルポートの文字列 */
