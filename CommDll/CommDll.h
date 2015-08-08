@@ -4,17 +4,22 @@
 #ifdef COMMDLL_EXPORTS
 #define DLLAPI __declspec(dllexport)
 #else
-#define DLLAPI __declspec(dllinport)
-
+#define DLLAPI __declspec(dllimport)
 #endif
+#include <winnt.h>
 class DLLAPI CommUnit
 {
 public:
 	CommUnit();
 	~CommUnit();
 
-	int add(int a, int b);
-	int sub(int a, int b);
+	BOOL Open(int comNumber);
+	BOOL Close();
+
+
+private:
+	BOOL CloseHandle();
+	HANDLE mComHandle;
 };
 #endif
 
