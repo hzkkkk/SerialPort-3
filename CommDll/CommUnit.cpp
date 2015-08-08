@@ -42,7 +42,9 @@ BOOL CommUnit::Close() {
 
 BOOL CommUnit::CloseHandle() {
 	if (mComHandle != INVALID_HANDLE_VALUE) {
-		return ::CloseHandle(mComHandle);
+		BOOL success = ::CloseHandle(mComHandle);
+		mComHandle = INVALID_HANDLE_VALUE;
+		return success;
 	}
 	return TRUE;
 }

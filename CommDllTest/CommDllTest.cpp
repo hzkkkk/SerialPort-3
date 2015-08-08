@@ -5,23 +5,25 @@
 #include <gtest/gtest.h>
 #include "../CommDll/CommDll.h"
 
-TEST(Open, success) {
-	CommUnit *commUnit = new CommUnit();
+class CommDllTest : public ::testing::Test {
+protected:
+	virtual void SetUp() {
+		commUnit = new CommUnit();
+	}
+	virtual void TearDown() {
+		delete commUnit;
+	}
+
+	CommUnit *commUnit;
+};
+
+TEST_F(CommDllTest, open_success) {
 	ASSERT_TRUE(commUnit->Open(3));
-	delete commUnit;
+	ASSERT_TRUE(commUnit->Close());
 }
-TEST(Open, fail) {
-	CommUnit *unit = new CommUnit();
-	ASSERT_FALSE(unit->Open(1));
-	delete unit;
-	unit = NULL;
-}
-TEST(Close, success) {
-	CommUnit *unit = new CommUnit();
-	ASSERT_TRUE(unit->Open(3));
-	ASSERT_TRUE(unit->Close());
-	delete unit;
-	unit = NULL;
+TEST_F(CommDllTest, open_fail) {
+	ASSERT_FALSE(commUnit->Open(1));
+	ASSERT_TRUE(commUnit->Close());
 }
 
 int main(int argc, char **argv)
@@ -31,4 +33,3 @@ int main(int argc, char **argv)
 	getchar();
 	return 0;
 }
-
