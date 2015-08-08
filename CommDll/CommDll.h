@@ -15,6 +15,7 @@ public:
 
 	BOOL Open(int comNumber);
 	BOOL Close();
+    DWORD GetLastError();
 
 #ifdef UNIT_TEST
 public:
@@ -26,7 +27,11 @@ private:
 // endof unit test
 private:
 	BOOL CloseHandle();
+    BOOL CreateCommHandle(TCHAR * portName);
+
+private:
 	HANDLE mComHandle;
+	DWORD mLastError;
 };
 #endif
 

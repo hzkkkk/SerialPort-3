@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include <iostream>
 #include <gtest/gtest.h>
 #include "../CommDll/CommDll.h"
 
@@ -23,6 +24,12 @@ TEST_F(CommDllTest, open_success) {
 }
 TEST_F(CommDllTest, open_fail) {
 	ASSERT_FALSE(commUnit->Open(1));
+	ASSERT_TRUE(commUnit->Close());
+}
+
+TEST_F(CommDllTest, getLastError) {
+	ASSERT_FALSE(commUnit->Open(1));
+	ASSERT_NE(commUnit->GetLastError(),0);
 	ASSERT_TRUE(commUnit->Close());
 }
 
