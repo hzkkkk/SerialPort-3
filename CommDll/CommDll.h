@@ -6,7 +6,7 @@
 #else
 #define DLLAPI __declspec(dllimport)
 #endif
-#include <winnt.h>
+
 class DLLAPI CommUnit
 {
 public:
@@ -16,7 +16,14 @@ public:
 	BOOL Open(int comNumber);
 	BOOL Close();
 
+#ifdef UNIT_TEST
+public:
+#else
+private:
+#endif
 
+
+// endof unit test
 private:
 	BOOL CloseHandle();
 	HANDLE mComHandle;

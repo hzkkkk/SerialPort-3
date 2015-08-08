@@ -14,9 +14,9 @@ CommUnit::~CommUnit()
 }
 
 BOOL CommUnit::Open(int comNumber) {
-	TCHAR comName[BUFSIZ] = {0};
 	BOOL success = TRUE;
 
+	TCHAR comName[BUFSIZ] = {0};
 	if ((_stprintf_s(comName, BUFSIZ, _T("COM%d"), comNumber)) == -1) {
 		success = FALSE;
 	}
@@ -31,6 +31,24 @@ BOOL CommUnit::Open(int comNumber) {
 			NULL                          /* テンプレートのハンドル */
 			);
 		success = mComHandle != INVALID_HANDLE_VALUE;
+	}
+
+	DCB dcb = { 0 };
+	if (success) {
+		success = ::GetCommState(mComHandle, &dcb);
+	}
+
+	TCHAR def[BUFSIZ] = {0};
+	if ((_stprintf_s(def, BUFSIZ, _T("baud=%d parity=%c data=%d stop=%d"), 115200, 'N', 8, 1)) == -1) {
+		success = FALSE;
+	}
+
+	if (success) {
+		success = ::BuildCommDCB(def, &dcb);
+	}
+
+	if (success) {
+		success = ::SetCommState(mComHandle, &dcb);
 	}
 	return success;
 }
