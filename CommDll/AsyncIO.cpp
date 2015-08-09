@@ -48,7 +48,7 @@ DWORD AsyncIO::Read(HANDLE handle, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, 
     return nread;
 }
 
-DWORD AsyncIO::Write(HANDLE handle, LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs)
+DWORD AsyncIO::Write(HANDLE handle, const LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs)
 {
     AutoLock lock(&writelock_);
 

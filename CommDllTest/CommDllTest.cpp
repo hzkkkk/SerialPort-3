@@ -87,6 +87,22 @@ TEST_F(CommDllTest, getLastError) {
     ASSERT_TRUE(commUnit->Close());
 }
 
+TEST_F(CommDllTest, send_recv) {
+    ASSERT_TRUE(commUnit->Open(3));
+
+    const char* msg = "Hello world\n";
+    commUnit->Send((const LPVOID)msg, strlen(msg), 1000);
+
+    BYTE buf[BUFSIZ] = { 0 };
+    commUnit->Recv(buf, strlen(msg), 1000);
+    std::cout << buf;
+
+    const char* msg2 = "Good Night\n";
+    commUnit->Send((const LPVOID)msg2, strlen(msg2), 1000);
+
+    ASSERT_TRUE(commUnit->Close());
+}
+
 TEST_F(AsyncIOTest, read) {
     HANDLE hFile = CreateFile(tmpFilePathToRead, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
     ASSERT_NE(hFile, INVALID_HANDLE_VALUE);
@@ -128,9 +144,6 @@ TEST_F(AsyncIOTest, write) {
 
 int main(int argc, char **argv)
 {
-
-
-
     ::testing::InitGoogleTest(&argc, argv);
     RUN_ALL_TESTS();
     getchar();

@@ -7,6 +7,7 @@ CommUnit::CommUnit()
     :comHandle_(INVALID_HANDLE_VALUE)
     , lastError_(0)
 {
+    asyncIO_ = new AsyncIO();
 }
 
 
@@ -45,6 +46,18 @@ BOOL CommUnit::Open(int comNumber) {
 }
 BOOL CommUnit::Close() {
     return CloseHandle();
+}
+
+BOOL CommUnit::Send(const LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs)
+{
+    DWORD written = asyncIO_->Write(comHandle_, lpBuffer, nNumberOfBytesToWrite, dwTimeoutMs);
+    return written == nNumberOfBytesToWrite;
+}
+
+DWORD CommUnit::Recv(LPVOID lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs)
+{
+    DWORD read = asyncIO_->Read(comHandle_, lpBuffer, nNumberOfBytesToRead, dwTimeoutMs);
+    return read == nNumberOfBytesToRead;
 }
 
 DWORD CommUnit::GetLastError()
