@@ -68,7 +68,7 @@ BOOL CommUnit::CreateCommHandle(TCHAR *portName) {
         0,                            /* 共有モード */
         NULL,                         /* セキュリティ属性 */
         OPEN_EXISTING,                /* 作成フラグ */
-        FILE_ATTRIBUTE_NORMAL,        /* 属性 */
+        FILE_FLAG_OVERLAPPED,        /* 属性 */
         NULL,                          /* テンプレートのハンドル */
         &lastError_);
 
