@@ -1,6 +1,4 @@
-#ifndef INLINE_WRAPWIN32API_H_
-#define INLINE_WRAPWIN32API_H_
-
+#include "stdafx.h"
 #include "stdafx.h"
 
 BOOL GetCommStateWrap(HANDLE hFile, LPDCB lpDCB, DWORD* lpLastError) {
@@ -46,4 +44,37 @@ BOOL SetCommStateWrap(
     }
     return success;
 }
-#endif
+HANDLE CreateEventWrap(
+    LPSECURITY_ATTRIBUTES lpEventAttributes, // セキュリティ記述子
+    BOOL bManualReset,                       // リセットのタイプ
+    BOOL bInitialState,                      // 初期状態
+    LPCTSTR lpName,                           // イベントオブジェクトの名前
+    DWORD* lpLastError) {
+    HANDLE success = ::CreateEvent(lpEventAttributes, bManualReset, bInitialState, lpName);
+    if (!success) {
+        *lpLastError = ::GetLastError();
+    }
+    return success;
+}
+DWORD WaitForSingleObjectWrap(
+    HANDLE hHandle,        // オブジェクトのハンドル
+    DWORD dwMilliseconds,   // タイムアウト時間
+    DWORD* lpLastError) {
+    DWORD reason = ::WaitForSingleObject(hHandle, dwMilliseconds);
+    if (!(reason == WAIT_ABANDONED || reason == WAIT_OBJECT_0 || reason == WAIT_TIMEOUT)) {
+        *lpLastError = ::GetLastError();
+    }
+    return reason;
+}
+BOOL GetOverlappedResultWrap(
+    HANDLE hFile,                       // ファイル、パイプ、通信デバイスのハンドル
+    LPOVERLAPPED lpOverlapped,          // オーバーラップ構造体
+    LPDWORD lpNumberOfBytesTransferred, // 転送されたバイト数
+    BOOL bWait,                         // 待機オプション
+    DWORD* lpLastError) {
+    BOOL success = ::GetOverlappedResult(hFile, lpOverlapped, lpNumberOfBytesTransferred, bWait);
+    if (!success) {
+        *lpLastError = ::GetLastError();
+    }
+    return success;
+}

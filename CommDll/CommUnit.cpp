@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CommDll.h"
 #include "inline.h"
-#include "inline_wrapwin32api.h"
+#include "Win32Wrap.h"
 
 CommUnit::CommUnit()
     :comHandle_(INVALID_HANDLE_VALUE)
