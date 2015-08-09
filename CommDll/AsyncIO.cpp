@@ -9,6 +9,9 @@ AsyncIO::AsyncIO()
     ::ZeroMemory(&writeov_, sizeof(writeov_));
     readov_.hEvent = CreateEventWrap(NULL, FALSE, FALSE, NULL, &lastError_);
     writeov_.hEvent = CreateEventWrap(NULL, FALSE, FALSE, NULL, &lastError_);
+
+    ::InitializeCriticalSection(&readlock_);
+    ::InitializeCriticalSection(&writelock_);
 }
 
 AsyncIO::~AsyncIO()
@@ -19,10 +22,15 @@ AsyncIO::~AsyncIO()
     if (writeov_.hEvent != INVALID_HANDLE_VALUE) {
         ::CloseHandle(writeov_.hEvent);
     }
+
+    ::DeleteCriticalSection(&readlock_);
+    ::DeleteCriticalSection(&writelock_);
 }
 
 DWORD AsyncIO::Read(HANDLE handle, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs)
 {
+    AutoLock lock(&readlock_);
+
     BOOL success = TRUE;
     DWORD nread = 0;
     ::ReadFile(handle, lpBuffer, nNumberOfBytesToRead, &nread, &readov_);
@@ -42,6 +50,8 @@ DWORD AsyncIO::Read(HANDLE handle, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, 
 
 DWORD AsyncIO::Write(HANDLE handle, LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs)
 {
+    AutoLock lock(&writelock_);
+
     BOOL success = TRUE;
     DWORD nwritten = 0;
     ::WriteFile(handle, lpBuffer, nNumberOfBytesToWrite, &nwritten, &writeov_);

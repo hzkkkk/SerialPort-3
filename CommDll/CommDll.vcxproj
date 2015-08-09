@@ -145,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AsyncIO.h" />
+    <ClInclude Include="AutoLock.h" />
     <ClInclude Include="CommDll.h" />
     <ClInclude Include="CommUnit.h" />
     <ClInclude Include="inline.h" />
@@ -154,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsyncIO.cpp" />
+    <ClCompile Include="AutoLock.cpp" />
     <ClCompile Include="CommDll.cpp" />
     <ClCompile Include="CommUnit.cpp" />
     <ClCompile Include="dllmain.cpp">

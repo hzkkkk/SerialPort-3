@@ -109,8 +109,6 @@ TEST_F(AsyncIOTest, write) {
     HANDLE hFile = CreateFile(tmpFilePathToWrite, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
     ASSERT_NE(hFile, INVALID_HANDLE_VALUE);
 
-    //int w = asyncIO->Write(hFile, writeData, WRITEDATASZ, 1000);
-    //std::cout << w << std::endl;
     ASSERT_EQ(WRITEDATASZ, asyncIO->Write(hFile, writeData, WRITEDATASZ, 1000));
     CloseHandle(hFile);
 
@@ -130,6 +128,9 @@ TEST_F(AsyncIOTest, write) {
 
 int main(int argc, char **argv)
 {
+
+
+
     ::testing::InitGoogleTest(&argc, argv);
     RUN_ALL_TESTS();
     getchar();
