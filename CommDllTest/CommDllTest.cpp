@@ -29,6 +29,8 @@ protected:
     virtual void TearDown() {
         ASSERT_TRUE(DeleteFile(tmpFilePathToRead));
         ASSERT_TRUE(DeleteFile(tmpFilePathToWrite));
+
+        delete asyncIO;
     }
 
     AsyncIO *asyncIO;
@@ -118,7 +120,7 @@ TEST_F(AsyncIOTest, write) {
     BYTE readbuf[BUFSIZ] = { 0 };
     DWORD dwNumberOfBytesRead;
     ASSERT_TRUE(::ReadFile(hFile, readbuf, WRITEDATASZ, &dwNumberOfBytesRead, NULL));
-    ASSERT_TRUE(WRITEDATASZ, dwNumberOfBytesRead);
+    ASSERT_EQ(WRITEDATASZ, dwNumberOfBytesRead);
     for (int i = 0; i < WRITEDATASZ; i++) {
         ASSERT_EQ(readbuf[i], writeData[i]);
     }
