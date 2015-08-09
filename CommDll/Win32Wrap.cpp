@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "stdafx.h"
 
 BOOL GetCommStateWrap(HANDLE hFile, LPDCB lpDCB, DWORD* lpLastError) {
 
@@ -73,6 +72,15 @@ BOOL GetOverlappedResultWrap(
     BOOL bWait,                         // 待機オプション
     DWORD* lpLastError) {
     BOOL success = ::GetOverlappedResult(hFile, lpOverlapped, lpNumberOfBytesTransferred, bWait);
+    if (!success) {
+        *lpLastError = ::GetLastError();
+    }
+    return success;
+}
+BOOL CancelIoWrap(
+    HANDLE hFile, // I/O 操作を取り消すファイルハンドル
+    DWORD* lpLastError) {
+    BOOL success = ::CancelIo(hFile);
     if (!success) {
         *lpLastError = ::GetLastError();
     }

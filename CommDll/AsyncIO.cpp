@@ -26,7 +26,7 @@ DWORD AsyncIO::Read(HANDLE handle, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, 
         success = GetOverlappedResultWrap(handle, &ov_, &nread, TRUE, &lastError_);
     }
     else if (reason == WAIT_TIMEOUT) {
-        CancelIo(handle);
+        CancelIoWrap(handle,&lastError_);
         return 0;
     }
     return nread;

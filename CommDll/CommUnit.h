@@ -13,10 +13,10 @@ public:
 
 #ifdef UNIT_TEST
 public:
+    HANDLE GetHandle();
 #else
 private:
 #endif
-
 
 // endof unit test
 private:

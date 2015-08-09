@@ -52,6 +52,7 @@ DWORD CommUnit::GetLastError()
     return lastError_;
 }
 
+
 BOOL CommUnit::CloseHandle() {
     if (comHandle_ != INVALID_HANDLE_VALUE) {
         BOOL success = ::CloseHandle(comHandle_);
@@ -74,3 +75,10 @@ BOOL CommUnit::CreateCommHandle(TCHAR *portName) {
 
     return comHandle_ != INVALID_HANDLE_VALUE;
 }
+
+#ifdef UNIT_TEST
+HANDLE CommUnit::GetHandle()
+{
+    return comHandle_;
+}
+#endif
