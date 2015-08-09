@@ -144,6 +144,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AsyncIO.h" />
     <ClInclude Include="CommDll.h" />
     <ClInclude Include="CommUnit.h" />
     <ClInclude Include="inline.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AsyncIO.cpp" />
     <ClCompile Include="CommDll.cpp" />
     <ClCompile Include="CommUnit.cpp" />
     <ClCompile Include="dllmain.cpp">

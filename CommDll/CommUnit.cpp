@@ -1,12 +1,11 @@
 #include "stdafx.h"
 #include "CommDll.h"
-#include "CommUnit.h"
 #include "inline.h"
 #include "inline_wrapwin32api.h"
 
 CommUnit::CommUnit()
-    :mComHandle(INVALID_HANDLE_VALUE)
-    , mLastError(0)
+    :comHandle_(INVALID_HANDLE_VALUE)
+    , lastError_(0)
 {
 }
 
@@ -27,7 +26,7 @@ BOOL CommUnit::Open(int comNumber) {
 
     DCB dcb = { 0 };
     if (success) {
-        success = GetCommStateWrap(mComHandle, &dcb, &mLastError);
+        success = GetCommStateWrap(comHandle_, &dcb, &lastError_);
     }
 
     TCHAR def[BUFSIZ] = { 0 };
@@ -36,11 +35,11 @@ BOOL CommUnit::Open(int comNumber) {
     }
 
     if (success) {
-        success = BuildCommDCBWrap(def, &dcb, &mLastError);
+        success = BuildCommDCBWrap(def, &dcb, &lastError_);
     }
 
     if (success) {
-        success = SetCommStateWrap(mComHandle, &dcb,&mLastError);
+        success = SetCommStateWrap(comHandle_, &dcb,&lastError_);
     }
     return success;
 }
@@ -50,20 +49,20 @@ BOOL CommUnit::Close() {
 
 DWORD CommUnit::GetLastError()
 {
-    return mLastError;
+    return lastError_;
 }
 
 BOOL CommUnit::CloseHandle() {
-    if (mComHandle != INVALID_HANDLE_VALUE) {
-        BOOL success = ::CloseHandle(mComHandle);
-        mComHandle = INVALID_HANDLE_VALUE;
+    if (comHandle_ != INVALID_HANDLE_VALUE) {
+        BOOL success = ::CloseHandle(comHandle_);
+        comHandle_ = INVALID_HANDLE_VALUE;
         return success;
     }
     return TRUE;
 }
 
 BOOL CommUnit::CreateCommHandle(TCHAR *portName) {
-    mComHandle = CreateFileWrap(
+    comHandle_ = CreateFileWrap(
         portName, /* シリアルポートの文字列 */
         GENERIC_READ | GENERIC_WRITE, /* アクセスモード */
         0,                            /* 共有モード */
@@ -71,7 +70,7 @@ BOOL CommUnit::CreateCommHandle(TCHAR *portName) {
         OPEN_EXISTING,                /* 作成フラグ */
         FILE_ATTRIBUTE_NORMAL,        /* 属性 */
         NULL,                          /* テンプレートのハンドル */
-        &mLastError);
+        &lastError_);
 
-    return mComHandle != INVALID_HANDLE_VALUE;
+    return comHandle_ != INVALID_HANDLE_VALUE;
 }

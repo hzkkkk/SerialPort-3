@@ -1,5 +1,5 @@
-#ifndef INLINE_WRAPWIN32API_H
-#define INLINE_WRAPWIN32API_H
+#ifndef INLINE_WRAPWIN32API_H_
+#define INLINE_WRAPWIN32API_H_
 
 #include "stdafx.h"
 

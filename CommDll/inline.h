@@ -1,5 +1,5 @@
-#ifndef COMDLL_INLINE_H
-#define COMDLL_INLINE_H
+#ifndef COMDLL_INLINE_H_
+#define COMDLL_INLINE_H_
 
 #include "stdafx.h"
 
