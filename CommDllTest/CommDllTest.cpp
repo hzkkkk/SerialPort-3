@@ -40,10 +40,10 @@ protected:
     TCHAR tmpFilePathToWrite[MAX_PATH];
 
     static const int BUFSIZE = 8192;
-    BYTE data[BUFSIZE];
+    char data[BUFSIZE];
 
     static const int WRITEDATASZ = 5;
-    BYTE writeData[WRITEDATASZ];
+    char writeData[WRITEDATASZ];
 
 private:
     void CreateTmpFileToRead() {
@@ -101,14 +101,14 @@ TEST_F(CommDllTest, send_recv) {
     ASSERT_TRUE(commUnit->Open(3));
 
     const char* msg = "Hello world\n";
-    commUnit->Send((const LPVOID)msg, strlen(msg), 1000);
+    commUnit->Send(msg, strlen(msg), 1000);
 
-    BYTE buf[BUFSIZ] = { 0 };
+    char buf[BUFSIZ] = { 0 };
     commUnit->Recv(buf, strlen(msg), 1000);
     std::cout << buf;
 
     const char* msg2 = "Good Night\n";
-    commUnit->Send((const LPVOID)msg2, strlen(msg2), 1000);
+    commUnit->Send(msg2, strlen(msg2), 1000);
 
     ASSERT_TRUE(commUnit->Close());
 }
@@ -117,7 +117,7 @@ TEST_F(AsyncIOTest, read) {
     HANDLE hFile = CreateFile(tmpFilePathToRead, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
     ASSERT_NE(hFile, INVALID_HANDLE_VALUE);
 
-    BYTE buf[BUFSIZE] = { 0 };
+    char buf[BUFSIZE] = { 0 };
     ASSERT_EQ(BUFSIZE, asyncIO->Read(hFile, buf, BUFSIZE, 1000));
     ASSERT_EQ(1, buf[0]);
 
@@ -127,7 +127,7 @@ TEST_F(AsyncIOTest, read_timeout) {
     CommUnit unit;
     unit.Open(3);
     HANDLE hFile = unit.GetHandle();
-    BYTE buf[BUFSIZE] = { 0 };
+    char buf[BUFSIZE] = { 0 };
     ASSERT_EQ(0, asyncIO->Read(hFile, buf, BUFSIZE, 1000));
 }
 
@@ -141,7 +141,7 @@ TEST_F(AsyncIOTest, write) {
     hFile = CreateFile(tmpFilePathToWrite, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     ASSERT_NE(hFile, INVALID_HANDLE_VALUE);
 
-    BYTE readbuf[BUFSIZ] = { 0 };
+    char readbuf[BUFSIZ] = { 0 };
     DWORD dwNumberOfBytesRead;
     ASSERT_TRUE(::ReadFile(hFile, readbuf, WRITEDATASZ, &dwNumberOfBytesRead, NULL));
     ASSERT_EQ(WRITEDATASZ, dwNumberOfBytesRead);

@@ -8,13 +8,13 @@ public:
 	CommUnit();
 	virtual ~CommUnit();
 
-	BOOL Open(int comNumber);
-	BOOL Close();
-    BOOL Send(const LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs);
-    DWORD Recv(LPVOID lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs);
+	bool Open(int comNumber);
+	bool Close();
+    bool Send(const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs);
+    bool Recv(char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs);
     DWORD GetLastError();
     LPTSTR GetLastErrorMsg();
-    VOID FreeLastErrorMsg(LPTSTR msgBuf);
+    void FreeLastErrorMsg(LPTSTR msgBuf);
 
 #ifdef UNIT_TEST
 public:
@@ -29,8 +29,8 @@ private:
     CommUnit(const CommUnit&); 
     void operator=(const CommUnit&);
 
-	BOOL CloseHandle();
-    BOOL CreateCommHandle(TCHAR * portName);
+	bool CloseHandle();
+    bool CreateCommHandle(TCHAR * portName);
 
 private:
     AsyncIO *asyncIO_;

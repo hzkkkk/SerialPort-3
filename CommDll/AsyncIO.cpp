@@ -29,7 +29,7 @@ AsyncIO::~AsyncIO()
     ::DeleteCriticalSection(&writelock_);
 }
 
-DWORD AsyncIO::Read(HANDLE handle, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs)
+int AsyncIO::Read(HANDLE handle, char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs)
 {
     AutoLock lock(&readlock_);
 
@@ -50,7 +50,7 @@ DWORD AsyncIO::Read(HANDLE handle, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, 
     return nread;
 }
 
-DWORD AsyncIO::Write(HANDLE handle, const LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs)
+int AsyncIO::Write(HANDLE handle, const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs)
 {
     AutoLock lock(&writelock_);
 

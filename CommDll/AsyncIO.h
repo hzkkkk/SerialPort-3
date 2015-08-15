@@ -7,8 +7,8 @@ class DLLAPI AsyncIO
 public:
     AsyncIO();
     virtual ~AsyncIO();
-    DWORD Read(HANDLE handle, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs);
-    DWORD Write(HANDLE handle, const LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs);
+    int Read(HANDLE handle, char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs);
+    int Write(HANDLE handle, const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs);
 private:
     AsyncIO(const AsyncIO&); 
     void operator=(const AsyncIO&);

@@ -18,8 +18,8 @@ CommUnit::~CommUnit()
     CloseHandle();
 }
 
-BOOL CommUnit::Open(int comNumber) {
-    BOOL success = TRUE;
+bool CommUnit::Open(int comNumber) {
+    bool success = TRUE;
 
     TCHAR comName[BUFSIZ] = { 0 };
     success = createCommNumber(comName, BUFSIZ, comNumber);
@@ -46,17 +46,17 @@ BOOL CommUnit::Open(int comNumber) {
     }
     return success;
 }
-BOOL CommUnit::Close() {
+bool CommUnit::Close() {
     return CloseHandle();
 }
 
-BOOL CommUnit::Send(const LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs)
+bool CommUnit::Send(const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs)
 {
     DWORD written = asyncIO_->Write(comHandle_, lpBuffer, nNumberOfBytesToWrite, dwTimeoutMs);
     return written == nNumberOfBytesToWrite;
 }
 
-DWORD CommUnit::Recv(LPVOID lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs)
+bool CommUnit::Recv(char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs)
 {
     DWORD read = asyncIO_->Read(comHandle_, lpBuffer, nNumberOfBytesToRead, dwTimeoutMs);
     return read == nNumberOfBytesToRead;
@@ -74,7 +74,7 @@ LPTSTR CommUnit::GetLastErrorMsg()
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL,
         lastError_,
-        MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), 
+        MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
         (LPTSTR)&lpMsgBuf,
         0,
         NULL
@@ -83,13 +83,13 @@ LPTSTR CommUnit::GetLastErrorMsg()
     return reinterpret_cast<LPTSTR>(lpMsgBuf);
 }
 
-VOID CommUnit::FreeLastErrorMsg(LPTSTR msgBuf)
+void CommUnit::FreeLastErrorMsg(LPTSTR msgBuf)
 {
     ::LocalFree(msgBuf);
 }
 
 
-BOOL CommUnit::CloseHandle() {
+bool CommUnit::CloseHandle() {
     if (comHandle_ != INVALID_HANDLE_VALUE) {
         BOOL success = ::CloseHandle(comHandle_);
         comHandle_ = INVALID_HANDLE_VALUE;
@@ -98,16 +98,8 @@ BOOL CommUnit::CloseHandle() {
     return TRUE;
 }
 
-BOOL CommUnit::CreateCommHandle(TCHAR *portName) {
-    comHandle_ = CreateFileWrap(
-        portName, /* シリアルポートの文字列 */
-        GENERIC_READ | GENERIC_WRITE, /* アクセスモード */
-        0,                            /* 共有モード */
-        NULL,                         /* セキュリティ属性 */
-        OPEN_EXISTING,                /* 作成フラグ */
-        FILE_FLAG_OVERLAPPED,        /* 属性 */
-        NULL,                          /* テンプレートのハンドル */
-        &lastError_);
+bool CommUnit::CreateCommHandle(TCHAR *portName) {
+    comHandle_ = CreateFileWrap(portName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL, &lastError_);
 
     return comHandle_ != INVALID_HANDLE_VALUE;
 }
