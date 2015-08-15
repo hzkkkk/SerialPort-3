@@ -25,6 +25,10 @@ private:
 
 // endof unit test
 private:
+private:
+    CommUnit(const CommUnit&); 
+    void operator=(const CommUnit&);
+
 	BOOL CloseHandle();
     BOOL CreateCommHandle(TCHAR * portName);
 

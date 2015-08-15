@@ -10,6 +10,9 @@ public:
     DWORD Read(HANDLE handle, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs);
     DWORD Write(HANDLE handle, const LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs);
 private:
+    AsyncIO(const AsyncIO&); 
+    void operator=(const AsyncIO&);
+
     DWORD lastError_;
     OVERLAPPED readov_;
     OVERLAPPED writeov_;

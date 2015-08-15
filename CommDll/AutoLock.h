@@ -4,9 +4,12 @@
 class AutoLock
 {
 public:
-    AutoLock(CRITICAL_SECTION* lock);
-	virtual ~AutoLock();
+    explicit AutoLock(CRITICAL_SECTION* lock);
+    virtual ~AutoLock();
 private:
-   CRITICAL_SECTION* lock_;
+    AutoLock(const AutoLock&); 
+    void operator=(const AutoLock&);
+
+    CRITICAL_SECTION* lock_;
 };
 #endif
