@@ -69,18 +69,19 @@ DWORD CommUnit::GetLastError()
 
 LPTSTR CommUnit::GetLastErrorMsg()
 {
-    LPVOID lpMsgBuf = NULL;
-    ::FormatMessage(
+    LPTSTR lpMsgBuf = NULL;
+    FormatMessageWrap(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL,
         lastError_,
         MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
-        (LPTSTR)&lpMsgBuf,
+        reinterpret_cast<LPTSTR>(&lpMsgBuf),
         0,
+        &lastError_,
         NULL
         );
 
-    return reinterpret_cast<LPTSTR>(lpMsgBuf);
+    return lpMsgBuf;
 }
 
 void CommUnit::FreeLastErrorMsg(LPTSTR msgBuf)

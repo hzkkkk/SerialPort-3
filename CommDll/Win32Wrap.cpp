@@ -86,3 +86,18 @@ BOOL CancelIoWrap(
     }
     return success;
 }
+DWORD FormatMessageWrap(
+    DWORD dwFlags,      // 入力元と処理方法のオプション
+    LPCVOID lpSource,   // メッセージの入力元
+    DWORD dwMessageId,  // メッセージ識別子
+    DWORD dwLanguageId, // 言語識別子
+    LPTSTR lpBuffer,    // メッセージバッファ
+    DWORD nSize,        // メッセージバッファの最大サイズ
+    DWORD* lpLastError,
+    va_list *Arguments) {  // 複数のメッセージ挿入シーケンスからなる配列
+    DWORD numbers = ::FormatMessage(dwFlags, lpSource, dwMessageId, dwLanguageId, lpBuffer, nSize, Arguments);
+    if (numbers == 0) {
+        *lpLastError = ::GetLastError();
+    }
+    return numbers;
+}
