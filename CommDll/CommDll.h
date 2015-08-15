@@ -8,8 +8,6 @@
 #endif
 
 #include "CommUnit.h"
-#include "AsyncIO.h"
-#include "AutoLock.h"
 
 #endif
 

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "CommDll.h"
+#include "AsyncIO.h"
+#include "AutoLock.h"
 #include "inline.h"
 #include "Win32Wrap.h"
 

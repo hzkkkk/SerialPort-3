@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "CommDll.h"
+#include "AutoLock.h"
 
 AutoLock::AutoLock(CRITICAL_SECTION *lock)
     :lock_(lock)

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include "../CommDll/CommDll.h"
+#include "../CommDll/AsyncIO.h"
 
 class CommDllTest : public ::testing::Test {
 protected:

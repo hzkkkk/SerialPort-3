@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "CommDll.h"
+#include "AutoLock.h"
 #include "Win32Wrap.h"
+#include "AsyncIO.h"
 
 AsyncIO::AsyncIO()
     : lastError_(0)
