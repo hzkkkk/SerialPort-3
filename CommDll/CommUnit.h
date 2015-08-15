@@ -13,6 +13,8 @@ public:
     BOOL Send(const LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs);
     DWORD Recv(LPVOID lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs);
     DWORD GetLastError();
+    LPTSTR GetLastErrorMsg();
+    VOID FreeLastErrorMsg(LPTSTR msgBuf);
 
 #ifdef UNIT_TEST
 public:

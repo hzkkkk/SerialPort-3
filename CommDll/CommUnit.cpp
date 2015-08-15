@@ -40,7 +40,7 @@ BOOL CommUnit::Open(int comNumber) {
     }
 
     if (success) {
-        success = SetCommStateWrap(comHandle_, &dcb,&lastError_);
+        success = SetCommStateWrap(comHandle_, &dcb, &lastError_);
     }
     return success;
 }
@@ -63,6 +63,27 @@ DWORD CommUnit::Recv(LPVOID lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeou
 DWORD CommUnit::GetLastError()
 {
     return lastError_;
+}
+
+LPTSTR CommUnit::GetLastErrorMsg()
+{
+    LPVOID lpMsgBuf = NULL;
+    ::FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        lastError_,
+        MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), 
+        (LPTSTR)&lpMsgBuf,
+        0,
+        NULL
+        );
+
+    return reinterpret_cast<LPTSTR>(lpMsgBuf);
+}
+
+VOID CommUnit::FreeLastErrorMsg(LPTSTR msgBuf)
+{
+    ::LocalFree(msgBuf);
 }
 
 
