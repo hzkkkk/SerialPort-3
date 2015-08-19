@@ -7,13 +7,15 @@ class DLLAPI AsyncIO
 public:
     AsyncIO();
     virtual ~AsyncIO();
-    int Read(HANDLE handle, char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs);
-    int Write(HANDLE handle, const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs);
+    bool Init();
+    int Read(HANDLE, char*, DWORD, DWORD);
+    int Write(HANDLE, const char*, DWORD, DWORD);
 private:
-    AsyncIO(const AsyncIO&); 
+    AsyncIO(const AsyncIO&);
     void operator=(const AsyncIO&);
 
-    DWORD lastError_;
+    bool IsInitialized();
+
     OVERLAPPED readov_;
     OVERLAPPED writeov_;
     CRITICAL_SECTION readlock_;

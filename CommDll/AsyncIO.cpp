@@ -5,12 +5,9 @@
 #include "AsyncIO.h"
 
 AsyncIO::AsyncIO()
-    : lastError_(0)
 {
     ::ZeroMemory(&readov_, sizeof(readov_));
     ::ZeroMemory(&writeov_, sizeof(writeov_));
-    readov_.hEvent = CreateEventWrap(NULL, FALSE, FALSE, NULL, &lastError_);
-    writeov_.hEvent = CreateEventWrap(NULL, FALSE, FALSE, NULL, &lastError_);
 
     ::InitializeCriticalSection(&readlock_);
     ::InitializeCriticalSection(&writelock_);
@@ -19,33 +16,42 @@ AsyncIO::AsyncIO()
 AsyncIO::~AsyncIO()
 {
     if (readov_.hEvent != INVALID_HANDLE_VALUE) {
-        ::CloseHandle(readov_.hEvent);
+        TryWin32(::CloseHandle(readov_.hEvent), __FILE__, __LINE__);
     }
     if (writeov_.hEvent != INVALID_HANDLE_VALUE) {
-        ::CloseHandle(writeov_.hEvent);
+        TryWin32(::CloseHandle(writeov_.hEvent), __FILE__, __LINE__);
     }
 
     ::DeleteCriticalSection(&readlock_);
     ::DeleteCriticalSection(&writelock_);
 }
 
-int AsyncIO::Read(HANDLE handle, char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs)
+bool AsyncIO::Init()
+{
+    bool success = TryWin32(CreateEventB(NULL, FALSE, FALSE, NULL, &readov_.hEvent), __FILE__, __LINE__);
+    if (success) {
+       success = TryWin32(CreateEventB(NULL, FALSE, FALSE, NULL, &writeov_.hEvent), __FILE__, __LINE__);
+    }
+    return success;
+}
+
+int AsyncIO::Read(HANDLE handle ,char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs)
 {
     AutoLock lock(&readlock_);
 
-    BOOL success = TRUE;
     DWORD nread = 0;
-    ::ReadFile(handle, lpBuffer, nNumberOfBytesToRead, &nread, &readov_);
-    if ((lastError_ = GetLastError()) != ERROR_IO_PENDING) {
-        return 0;
+    bool success = TryWin32AsyncIO(::ReadFile(handle, lpBuffer, nNumberOfBytesToRead, &nread, &readov_), __FILE__, __LINE__);
+    DWORD reason = 0;
+    if (success) {
+        success = TryWin32(WaitForSingleObjectB(readov_.hEvent, dwTimeoutMs, &reason), __FILE__, __LINE__);
     }
-    DWORD reason = WaitForSingleObjectWrap(readov_.hEvent, dwTimeoutMs, &lastError_);
-    if (reason == WAIT_OBJECT_0) {
-        success = GetOverlappedResultWrap(handle, &readov_, &nread, TRUE, &lastError_);
-    }
-    else if (reason == WAIT_TIMEOUT) {
-        CancelIoWrap(handle,&lastError_);
-        return 0;
+    if (success) {
+        if (reason == WAIT_OBJECT_0) {
+            success = TryWin32(::GetOverlappedResult(handle, &readov_, &nread, TRUE), __FILE__, __LINE__);
+        }
+        else if (reason == WAIT_TIMEOUT) {
+            TryWin32(::CancelIo(handle), __FILE__, __LINE__);
+        }
     }
     return nread;
 }
@@ -54,20 +60,25 @@ int AsyncIO::Write(HANDLE handle, const char* lpBuffer, DWORD nNumberOfBytesToWr
 {
     AutoLock lock(&writelock_);
 
-    BOOL success = TRUE;
     DWORD nwritten = 0;
-    ::WriteFile(handle, lpBuffer, nNumberOfBytesToWrite, &nwritten, &writeov_);
-    if ((lastError_ = GetLastError()) != ERROR_IO_PENDING) {
-        return 0;
+    bool success = TryWin32AsyncIO(::WriteFile(handle, lpBuffer, nNumberOfBytesToWrite, &nwritten, &writeov_), __FILE__, __LINE__);
+    DWORD reason = 0;
+    if (success) {
+        success = TryWin32(WaitForSingleObjectB(writeov_.hEvent, dwTimeoutMs, &reason), __FILE__, __LINE__);
     }
-    DWORD reason = WaitForSingleObjectWrap(writeov_.hEvent, dwTimeoutMs, &lastError_);
-    if (reason == WAIT_OBJECT_0) {
-        success = GetOverlappedResultWrap(handle, &writeov_, &nwritten, TRUE, &lastError_);
-    }
-    else if (reason == WAIT_TIMEOUT) {
-        CancelIoWrap(handle,&lastError_);
-        return 0;
+
+    if (success) {
+        if (reason == WAIT_OBJECT_0) {
+            success = TryWin32(::GetOverlappedResult(handle, &writeov_, &nwritten, TRUE), __FILE__, __LINE__);
+        }
+        else if (reason == WAIT_TIMEOUT) {
+            TryWin32(CancelIo(handle), __FILE__, __LINE__);
+        }
     }
     return nwritten;
 }
 
+bool AsyncIO::IsInitialized()
+{
+    return !(readov_.hEvent == NULL || writeov_.hEvent == NULL);
+}

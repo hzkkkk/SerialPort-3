@@ -13,8 +13,6 @@ public:
     bool Send(const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs);
     bool Recv(char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs);
     DWORD GetLastError();
-    LPTSTR GetLastErrorMsg();
-    void FreeLastErrorMsg(LPTSTR msgBuf);
 
 #ifdef UNIT_TEST
 public:
@@ -30,7 +28,6 @@ private:
     void operator=(const CommUnit&);
 
 	bool CloseHandle();
-    bool CreateCommHandle(TCHAR * portName);
 
 private:
     AsyncIO *asyncIO_;

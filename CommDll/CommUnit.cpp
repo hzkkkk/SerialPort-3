@@ -15,6 +15,7 @@ CommUnit::CommUnit()
 
 CommUnit::~CommUnit()
 {
+    delete asyncIO_;
     CloseHandle();
 }
 
@@ -44,6 +45,8 @@ bool CommUnit::Open(int comNumber) {
     if (success) {
         success = TryWin32(::SetCommState(comHandle_, &dcb), __FILE__, __LINE__);
     }
+    asyncIO_->Init();
+
     return success;
 }
 bool CommUnit::Close() {
@@ -67,29 +70,6 @@ DWORD CommUnit::GetLastError()
     return lastError_;
 }
 
-LPTSTR CommUnit::GetLastErrorMsg()
-{
-    LPTSTR lpMsgBuf = NULL;
-    FormatMessageWrap(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
-        lastError_,
-        MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
-        reinterpret_cast<LPTSTR>(&lpMsgBuf),
-        0,
-        &lastError_,
-        NULL
-        );
-
-    return lpMsgBuf;
-}
-
-void CommUnit::FreeLastErrorMsg(LPTSTR msgBuf)
-{
-    ::LocalFree(msgBuf);
-}
-
-
 bool CommUnit::CloseHandle() {
     if (comHandle_ == INVALID_HANDLE_VALUE) {
         return true;
@@ -97,12 +77,6 @@ bool CommUnit::CloseHandle() {
     BOOL success = TryWin32(::CloseHandle(comHandle_), __FILE__, __LINE__);
     comHandle_ = INVALID_HANDLE_VALUE;
     return success;
-}
-
-bool CommUnit::CreateCommHandle(TCHAR *portName) {
-    comHandle_ = CreateFileWrap(portName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL, &lastError_);
-
-    return comHandle_ != INVALID_HANDLE_VALUE;
 }
 
 #ifdef UNIT_TEST

@@ -3,31 +3,12 @@
 
 #include "stdafx.h"
 
-BOOL GetCommStateWrap(HANDLE, LPDCB, DWORD*);
-HANDLE CreateFileWrap(LPCTSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE, DWORD*);
-BOOL BuildCommDCBWrap(LPCTSTR, LPDCB, DWORD*);
-BOOL SetCommStateWrap(HANDLE, LPDCB, DWORD*);
-HANDLE CreateEventWrap(LPSECURITY_ATTRIBUTES, BOOL, BOOL, LPCTSTR, DWORD*);
-DWORD WaitForSingleObjectWrap(HANDLE, DWORD, DWORD*);
-BOOL GetOverlappedResultWrap(HANDLE, LPOVERLAPPED, LPDWORD, BOOL, DWORD*);
-BOOL CancelIoWrap(HANDLE, DWORD*);
-DWORD FormatMessageWrap(DWORD, LPCVOID, DWORD, DWORD, LPTSTR, DWORD, DWORD*, va_list*);
-
-bool GetCommStateWrap(HANDLE, LPDCB);
-bool CreateFileB(LPCTSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE*);
-bool BuildCommDCBWrap(LPCTSTR, LPDCB);
-bool SetCommStateWrap(HANDLE, LPDCB);
-bool CreateEventWrap(LPSECURITY_ATTRIBUTES, BOOL, BOOL, LPCTSTR);
-bool WaitForSingleObjectWrap(HANDLE, DWORD);
-bool GetOverlappedResultWrap(HANDLE, LPOVERLAPPED, LPDWORD, BOOL);
-bool CancelIoWrap(HANDLE);
-bool FormatMessageWrap(DWORD, LPCVOID, DWORD, DWORD, LPTSTR, DWORD, va_list*);
-
 bool CreateFileB(LPCTSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE, HANDLE*);
 bool CreateEventB(LPSECURITY_ATTRIBUTES, BOOL, BOOL, LPCTSTR, HANDLE*);
 bool WaitForSingleObjectB(HANDLE, DWORD, DWORD*);
 bool FormatMessageB(DWORD, LPCVOID, DWORD, DWORD, LPTSTR, DWORD, DWORD*, va_list *);
-bool TryWin32(bool, char *, int);
-bool Try(bool, char *, int);
+bool TryWin32(bool, const  char *, int);
+bool TryWin32AsyncIO(bool, const char *, int);
+bool Try(bool, const  char *, int);
 
 #endif
