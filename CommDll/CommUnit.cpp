@@ -22,27 +22,27 @@ bool CommUnit::Open(int comNumber) {
     bool success = TRUE;
 
     TCHAR comName[BUFSIZ] = { 0 };
-    success = createCommNumber(comName, BUFSIZ, comNumber);
+    success = Try(createCommNumber(comName, BUFSIZ, comNumber), __FILE__, __LINE__);
     if (success) {
-        success = CreateCommHandle(comName);
+        success = TryWin32(CreateFileB(comName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL, &comHandle_), __FILE__, __LINE__);
     }
 
     DCB dcb = { 0 };
     if (success) {
-        success = GetCommStateWrap(comHandle_, &dcb, &lastError_);
+        success = TryWin32(::GetCommState(comHandle_, &dcb), __FILE__, __LINE__);
     }
 
     TCHAR def[BUFSIZ] = { 0 };
     if (success) {
-        success = createCommParam(def, BUFSIZ);
+        success = Try(createCommParam(def, BUFSIZ), __FILE__, __LINE__);
     }
 
     if (success) {
-        success = BuildCommDCBWrap(def, &dcb, &lastError_);
+        success = TryWin32(::BuildCommDCB(def, &dcb), __FILE__, __LINE__);
     }
 
     if (success) {
-        success = SetCommStateWrap(comHandle_, &dcb, &lastError_);
+        success = TryWin32(::SetCommState(comHandle_, &dcb), __FILE__, __LINE__);
     }
     return success;
 }
@@ -91,12 +91,12 @@ void CommUnit::FreeLastErrorMsg(LPTSTR msgBuf)
 
 
 bool CommUnit::CloseHandle() {
-    if (comHandle_ != INVALID_HANDLE_VALUE) {
-        BOOL success = ::CloseHandle(comHandle_);
-        comHandle_ = INVALID_HANDLE_VALUE;
-        return success;
+    if (comHandle_ == INVALID_HANDLE_VALUE) {
+        return true;
     }
-    return TRUE;
+    BOOL success = TryWin32(::CloseHandle(comHandle_), __FILE__, __LINE__);
+    comHandle_ = INVALID_HANDLE_VALUE;
+    return success;
 }
 
 bool CommUnit::CreateCommHandle(TCHAR *portName) {

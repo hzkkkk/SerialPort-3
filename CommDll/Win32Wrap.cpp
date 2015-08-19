@@ -1,4 +1,21 @@
 #include "stdafx.h"
+#include <iostream>
+
+static LPTSTR GetLastErrorMsg(DWORD dwLastError)
+{
+    LPTSTR lpMsgBuf = NULL;
+    if (FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        dwLastError,
+        MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
+        reinterpret_cast<LPTSTR>(&lpMsgBuf),
+        0,
+        NULL)) {
+        return lpMsgBuf;
+    }
+    return NULL;
+}
 
 BOOL GetCommStateWrap(HANDLE hFile, LPDCB lpDCB, DWORD* lpLastError) {
 
@@ -109,7 +126,8 @@ bool CreateFileB(
     DWORD dwCreationDisposition,                // 作成方法
     DWORD dwFlagsAndAttributes,                 // ファイル属性
     HANDLE hTemplateFile,                       // テンプレートファイルのハンドル
-    HANDLE* handle) {
+    HANDLE* handle)
+{
     HANDLE got = ::CreateFile(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
     if (got != INVALID_HANDLE_VALUE) {
         *handle = got;
@@ -122,9 +140,11 @@ bool CreateEventB(
     BOOL bManualReset,                       // リセットのタイプ
     BOOL bInitialState,                      // 初期状態
     LPCTSTR lpName,                           // イベントオブジェクトの名前
-    HANDLE* handle) {
+    HANDLE* handle)
+{
     HANDLE got = ::CreateEvent(lpEventAttributes, bManualReset, bInitialState, lpName);
-    if (!got) {
+    if (!got)
+    {
         *handle = got;
     }
     return got != NULL;
@@ -133,7 +153,8 @@ bool CreateEventB(
 bool WaitForSingleObjectB(
     HANDLE hHandle,        // オブジェクトのハンドル
     DWORD dwMilliseconds,   // タイムアウト時間
-    DWORD* lpReason) {
+    DWORD* lpReason)
+{
     DWORD reason = ::WaitForSingleObject(hHandle, dwMilliseconds);
     if (reason == WAIT_ABANDONED || reason == WAIT_OBJECT_0 || reason == WAIT_TIMEOUT) {
         *lpReason = reason;
@@ -151,8 +172,28 @@ bool FormatMessageB(
     DWORD* written,
     va_list *Arguments) {  // 複数のメッセージ挿入シーケンスからなる配列
     DWORD number = ::FormatMessage(dwFlags, lpSource, dwMessageId, dwLanguageId, lpBuffer, nSize, Arguments);
-    if (0 <= number) {
+    if (0 <= number)
+    {
         *written = number;
     }
     return !(number <= 0);
+}
+bool TryWin32(bool success, char * filename, int linenumber)
+{
+    if (!success) {
+        DWORD dwLastError = ::GetLastError();
+        LPTSTR msg = GetLastErrorMsg(dwLastError);
+        if (msg) {
+            std::wcout << "reason = [" << msg << "]" << "file=" << filename << " line=" << linenumber << std::endl;
+        }
+        ::LocalFree(msg);
+    }
+    return success;
+}
+bool Try(bool success, char * filename, int linenumber)
+{
+    if (!success) {
+        std::wcout << "reason = [error]" << "file=" << filename << " line=" << linenumber << std::endl;
+    }
+    return success;
 }

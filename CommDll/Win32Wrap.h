@@ -21,10 +21,13 @@ bool CreateEventWrap(LPSECURITY_ATTRIBUTES, BOOL, BOOL, LPCTSTR);
 bool WaitForSingleObjectWrap(HANDLE, DWORD);
 bool GetOverlappedResultWrap(HANDLE, LPOVERLAPPED, LPDWORD, BOOL);
 bool CancelIoWrap(HANDLE);
-bool FormatMessageWrap(DWORD, LPCVOID, DWORD, DWORD, LPTSTR, DWORD,  va_list*);
+bool FormatMessageWrap(DWORD, LPCVOID, DWORD, DWORD, LPTSTR, DWORD, va_list*);
 
-bool CreateFileB( LPCTSTR , DWORD , DWORD , LPSECURITY_ATTRIBUTES , DWORD , DWORD , HANDLE , HANDLE* );
-bool CreateEventB( LPSECURITY_ATTRIBUTES , BOOL , BOOL , LPCTSTR , HANDLE* );
-bool WaitForSingleObjectB( HANDLE , DWORD , DWORD* );
-bool FormatMessageB( DWORD , LPCVOID , DWORD , DWORD , LPTSTR , DWORD , DWORD* , va_list *);
+bool CreateFileB(LPCTSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE, HANDLE*);
+bool CreateEventB(LPSECURITY_ATTRIBUTES, BOOL, BOOL, LPCTSTR, HANDLE*);
+bool WaitForSingleObjectB(HANDLE, DWORD, DWORD*);
+bool FormatMessageB(DWORD, LPCVOID, DWORD, DWORD, LPTSTR, DWORD, DWORD*, va_list *);
+bool TryWin32(bool, char *, int);
+bool Try(bool, char *, int);
+
 #endif

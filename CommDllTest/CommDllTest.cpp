@@ -82,20 +82,20 @@ TEST_F(CommDllTest, open_fail) {
     ASSERT_TRUE(commUnit->Close());
 }
 
-TEST_F(CommDllTest, getLastError) {
-    ASSERT_FALSE(commUnit->Open(1));
-    ASSERT_NE(commUnit->GetLastError(), 0);
-    ASSERT_TRUE(commUnit->Close());
-}
+//TEST_F(CommDllTest, getLastError) {
+//    ASSERT_FALSE(commUnit->Open(1));
+//    ASSERT_NE(commUnit->GetLastError(), 0);
+//    ASSERT_TRUE(commUnit->Close());
+//}
 
-TEST_F(CommDllTest, getLastMsg) {
-    ASSERT_FALSE(commUnit->Open(1));
-    LPTSTR msg = commUnit->GetLastErrorMsg();
-    ASSERT_STREQ(_T("The system cannot find the file specified.\r\n"), msg);
-    //    std::wcout << msg << std::endl;
-    commUnit->FreeLastErrorMsg(msg);
-    ASSERT_TRUE(commUnit->Close());
-}
+//TEST_F(CommDllTest, getLastMsg) {
+//    ASSERT_FALSE(commUnit->Open(1));
+//    LPTSTR msg = commUnit->GetLastErrorMsg();
+//    ASSERT_STREQ(_T("The system cannot find the file specified.\r\n"), msg);
+//    //    std::wcout << msg << std::endl;
+//    commUnit->FreeLastErrorMsg(msg);
+//    ASSERT_TRUE(commUnit->Close());
+//}
 
 TEST_F(CommDllTest, send_recv) {
     ASSERT_TRUE(commUnit->Open(3));
