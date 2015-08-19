@@ -7,7 +7,6 @@
 
 CommUnit::CommUnit()
     :comHandle_(INVALID_HANDLE_VALUE)
-    , lastError_(0)
 {
     asyncIO_ = new AsyncIO();
 }
@@ -63,11 +62,6 @@ bool CommUnit::Recv(char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutM
 {
     DWORD read = asyncIO_->Read(comHandle_, lpBuffer, nNumberOfBytesToRead, dwTimeoutMs);
     return read == nNumberOfBytesToRead;
-}
-
-DWORD CommUnit::GetLastError()
-{
-    return lastError_;
 }
 
 bool CommUnit::CloseHandle() {

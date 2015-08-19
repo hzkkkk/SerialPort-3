@@ -5,34 +5,28 @@ class AsyncIO;
 class DLLAPI CommUnit
 {
 public:
-	CommUnit();
-	virtual ~CommUnit();
+    CommUnit();
+    virtual ~CommUnit();
 
-	bool Open(int comNumber);
-	bool Close();
+    bool Open(int comNumber);
+    bool Close();
     bool Send(const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs);
     bool Recv(char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs);
-    DWORD GetLastError();
-
 #ifdef UNIT_TEST
 public:
     HANDLE GetHandle();
 #else
 private:
 #endif
-
-// endof unit test
 private:
-private:
-    CommUnit(const CommUnit&); 
+    CommUnit(const CommUnit&);
     void operator=(const CommUnit&);
 
-	bool CloseHandle();
+    bool CloseHandle();
 
 private:
     AsyncIO *asyncIO_;
-	HANDLE comHandle_;
-	DWORD lastError_;
+    HANDLE comHandle_;
 };
 
 #endif
