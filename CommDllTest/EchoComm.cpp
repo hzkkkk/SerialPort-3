@@ -2,18 +2,27 @@
 #include <process.h>
 #include "EchoComm.h"
 
+static bool stop = false;
+
 static const TCHAR *sname;
 static const TCHAR* sparam;
 static HANDLE shandle;
+static HANDLE thread;
 
 static bool CreateCom();
 
-static unsigned __stdcall SecondThreadFunc(void* )
+void ThreadShutdown()
+{
+    stop = true;
+    WaitForSingleObject(thread, INFINITE);
+}
+
+static unsigned __stdcall Echo(void* )
 {
     if (!CreateCom()) {
         return 1;
     }
-    while (true) {
+    while (!stop) {
         char c;
         DWORD read = 0;
         ::ReadFile(shandle, &c, 1, &read, NULL);
@@ -24,6 +33,8 @@ static unsigned __stdcall SecondThreadFunc(void* )
             break;
         }
     }
+    ::CloseHandle(shandle);
+    _endthreadex(0);
     return 1;
 }
 void StartEchoServer(const TCHAR *name, const TCHAR* param)
@@ -31,9 +42,9 @@ void StartEchoServer(const TCHAR *name, const TCHAR* param)
     sname = name;
     sparam = param;
 
-    HANDLE hThread;
+    stop = false;
     unsigned threadID;
-    hThread = (HANDLE)_beginthreadex(NULL, 0, &SecondThreadFunc, NULL, 0, &threadID);
+    thread = (HANDLE)_beginthreadex(NULL, 0, &Echo, NULL, 0, &threadID);
 }
 
 static unsigned __stdcall Bark(void* )
@@ -42,7 +53,7 @@ static unsigned __stdcall Bark(void* )
         return 1;
     }
 
-    while (true) {
+    while (!stop) {
         char c = 'a';
         DWORD read = 0;
         if ((::WriteFile(shandle, &c, 1, &read, NULL)) != 1) {
@@ -50,6 +61,8 @@ static unsigned __stdcall Bark(void* )
         }
         Sleep(1000);
     }
+    ::CloseHandle(shandle);
+    _endthreadex(0);
     return 1;
 }
 void StartBarkServer(const TCHAR *name, const TCHAR* param)
@@ -57,10 +70,11 @@ void StartBarkServer(const TCHAR *name, const TCHAR* param)
     sname = name;
     sparam = param;
 
-    HANDLE hThread;
+    stop = false;
     unsigned threadID;
-    hThread = (HANDLE)_beginthreadex(NULL, 0, &Bark, NULL, 0, &threadID);
+    thread = (HANDLE)_beginthreadex(NULL, 0, &Bark, NULL, 0, &threadID);
 }
+
 static bool CreateCom()
 {
     shandle = ::CreateFile(sname, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
