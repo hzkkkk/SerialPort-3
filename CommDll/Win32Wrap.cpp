@@ -64,40 +64,40 @@ bool FormatMessageB(
     return !(number <= 0);
 }
 
-bool TryWin32(bool success, const char * filename, int linenumber)
+bool TryWin32(bool success, const char * function, int linenumber)
 {
     if (!success) {
         DWORD dwLastError = ::GetLastError();
-        PrintErrorMsg(dwLastError, filename, linenumber);
+        PrintErrorMsg(dwLastError, function, linenumber);
     }
     return success;
 }
 
-bool TryWin32AsyncIO(bool success, const char * filename, int linenumber)
+bool TryWin32AsyncIO(bool success, const char * function, int linenumber)
 {
     if (!success) {
         DWORD dwLastError = ::GetLastError();
         if (dwLastError != ERROR_IO_PENDING) {
-            PrintErrorMsg(dwLastError, filename, linenumber);
+            PrintErrorMsg(dwLastError, function, linenumber);
             return false;
         }
     }
     return true;
 }
 
-bool Try(bool success, const char * filename, int linenumber)
+bool Try(bool success, const char * function, int linenumber)
 {
     if (!success) {
-        std::wcout << "reason = [error]" << "file=" << filename << " line=" << linenumber << std::endl;
+        std::wcout << "reason = [error]" << "func=" << function << " line=" << linenumber << std::endl;
     }
     return success;
 }
 
-static void PrintErrorMsg(DWORD dwLastError, const char * filename, int linenumber)
+static void PrintErrorMsg(DWORD dwLastError, const char * function, int linenumber)
 {
     LPTSTR msg = GetLastErrorMsg(dwLastError);
     if (msg) {
-        std::wcout << "reason = [" << msg << "]" << "file=" << filename << " line=" << linenumber << std::endl;
+        std::wcout << "reason = [" << msg << "]" << "func=" << function << " line=" << linenumber << std::endl;
     }
     ::LocalFree(msg);
 }

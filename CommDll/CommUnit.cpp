@@ -22,27 +22,27 @@ bool CommUnit::Open(int comNumber) {
     bool success = TRUE;
 
     TCHAR comName[BUFSIZ] = { 0 };
-    success = Try(createCommNumber(comName, BUFSIZ, comNumber), __FILE__, __LINE__);
+    success = Try(createCommNumber(comName, BUFSIZ, comNumber), __FUNCTION__, __LINE__);
     if (success) {
-        success = TryWin32(CreateFileB(comName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL, &comHandle_), __FILE__, __LINE__);
+        success = TryWin32(CreateFileB(comName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL, &comHandle_), __FUNCTION__, __LINE__);
     }
 
     DCB dcb = { 0 };
     if (success) {
-        success = TryWin32(::GetCommState(comHandle_, &dcb), __FILE__, __LINE__);
+        success = TryWin32(::GetCommState(comHandle_, &dcb), __FUNCTION__, __LINE__);
     }
 
     TCHAR def[BUFSIZ] = { 0 };
     if (success) {
-        success = Try(createCommParam(def, BUFSIZ), __FILE__, __LINE__);
+        success = Try(createCommParam(def, BUFSIZ), __FUNCTION__, __LINE__);
     }
 
     if (success) {
-        success = TryWin32(::BuildCommDCB(def, &dcb), __FILE__, __LINE__);
+        success = TryWin32(::BuildCommDCB(def, &dcb), __FUNCTION__, __LINE__);
     }
 
     if (success) {
-        success = TryWin32(::SetCommState(comHandle_, &dcb), __FILE__, __LINE__);
+        success = TryWin32(::SetCommState(comHandle_, &dcb), __FUNCTION__, __LINE__);
     }
     asyncIO_->Init();
 
@@ -68,7 +68,7 @@ bool CommUnit::CloseHandle() {
     if (comHandle_ == INVALID_HANDLE_VALUE) {
         return true;
     }
-    BOOL success = TryWin32(::CloseHandle(comHandle_), __FILE__, __LINE__);
+    BOOL success = TryWin32(::CloseHandle(comHandle_), __FUNCTION__, __LINE__);
     comHandle_ = INVALID_HANDLE_VALUE;
     return success;
 }
