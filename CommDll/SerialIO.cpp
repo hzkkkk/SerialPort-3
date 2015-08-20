@@ -97,9 +97,11 @@ bool SerialIO::ReadByEvent(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
     char* buffer = NULL;
     if (success) {
         buffer = new char[stat.cbInQue + 1];
+        // TODO bufferÇÃÉTÉCÉY
         buffer[0] = c;
         int read = Read(handle_, buffer + 1, stat.cbInQue, 0);
         if (read != stat.cbInQue) {
+            //TODO è¡Ç∑
             std::cout << read << "@@@@@@@@@@@:" << stat.cbInQue << std::endl;
 
         }
