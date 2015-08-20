@@ -1,0 +1,84 @@
+#include "stdafx.h"
+#include <process.h>
+#include "EchoComm.h"
+
+static const TCHAR *sname;
+static const TCHAR* sparam;
+static HANDLE shandle;
+
+static bool CreateCom();
+
+static unsigned __stdcall SecondThreadFunc(void* )
+{
+    if (!CreateCom()) {
+        return 1;
+    }
+    while (true) {
+        char c;
+        DWORD read = 0;
+        ::ReadFile(shandle, &c, 1, &read, NULL);
+        if (c == 'q') {
+            break;
+        }
+        if ((::WriteFile(shandle, &c, 1, &read, NULL)) != 1) {
+            break;
+        }
+    }
+    return 1;
+}
+void StartEchoServer(const TCHAR *name, const TCHAR* param)
+{
+    sname = name;
+    sparam = param;
+
+    HANDLE hThread;
+    unsigned threadID;
+    hThread = (HANDLE)_beginthreadex(NULL, 0, &SecondThreadFunc, NULL, 0, &threadID);
+}
+
+static unsigned __stdcall Bark(void* )
+{
+    if (!CreateCom()) {
+        return 1;
+    }
+
+    while (true) {
+        char c = 'a';
+        DWORD read = 0;
+        if ((::WriteFile(shandle, &c, 1, &read, NULL)) != 1) {
+            break;
+        }
+        Sleep(1000);
+    }
+    return 1;
+}
+void StartBarkServer(const TCHAR *name, const TCHAR* param)
+{
+    sname = name;
+    sparam = param;
+
+    HANDLE hThread;
+    unsigned threadID;
+    hThread = (HANDLE)_beginthreadex(NULL, 0, &Bark, NULL, 0, &threadID);
+}
+static bool CreateCom()
+{
+    shandle = ::CreateFile(sname, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (shandle == INVALID_HANDLE_VALUE)
+        return false;
+
+    DCB dcb = { 0 };
+    if (!::GetCommState(shandle, &dcb)) {
+        return false;
+    }
+
+    if (!::BuildCommDCB(sparam, &dcb)) {
+        return false;
+    }
+
+    if (!::SetCommState(shandle, &dcb)) {
+        return false;
+    }
+    return true;
+}
+

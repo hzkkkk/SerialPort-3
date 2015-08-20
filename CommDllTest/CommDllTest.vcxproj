@@ -22,7 +22,7 @@
     <ProjectGuid>{7806658A-FEA1-4C88-9134-BEB1CA291952}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CommDllTest</RootNamespace>
-    <WindowsTargetPlatformVersion>7</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -149,13 +149,16 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EchoComm.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AsyncIOTest.cpp" />
     <ClCompile Include="CommDllTest.cpp" />
+    <ClCompile Include="EchoComm.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SerialIOTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

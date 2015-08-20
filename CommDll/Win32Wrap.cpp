@@ -75,17 +75,13 @@ bool TryWin32(bool success, const char * filename, int linenumber)
 
 bool TryWin32AsyncIO(bool success, const char * filename, int linenumber)
 {
-    if (success) {
-        std::wcout << "reason = [" << "handle is not FILE_FLAG_OVERLAPPED" << "]" << "file=" << filename << " line=" << linenumber << std::endl;
-        return false;
+    if (!success) {
+        DWORD dwLastError = ::GetLastError();
+        if (dwLastError != ERROR_IO_PENDING) {
+            PrintErrorMsg(dwLastError, filename, linenumber);
+            return false;
+        }
     }
-
-    DWORD dwLastError = ::GetLastError();
-    if (dwLastError != ERROR_IO_PENDING) {
-        PrintErrorMsg(dwLastError, filename, linenumber);
-        return false;
-    }
-
     return true;
 }
 
