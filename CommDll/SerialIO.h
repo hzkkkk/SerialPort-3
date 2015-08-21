@@ -9,7 +9,7 @@ public:
     virtual ~SerialIO();
     bool Open(const TCHAR*, const TCHAR*);
     bool Close();
-    bool ReadByEvent(char**, int*, DWORD);
+    bool ReadChunk(char**, int*, DWORD);
     int Read(HANDLE, char*, DWORD, DWORD);
     int Write(HANDLE, const char*, DWORD, DWORD);
 private:

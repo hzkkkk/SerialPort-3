@@ -38,7 +38,7 @@ TEST_F(SerialIOTest, open_1byte_read) {
     ASSERT_TRUE(io->Open(_T("COM3"),_T("baud=115200 parity=N data=8 stop=1")));
     char * buf;
     int readlen;
-    ASSERT_TRUE(io->ReadByEvent(&buf, &readlen, 2000));
+    ASSERT_TRUE(io->ReadChunk(&buf, &readlen, 2000));
     ASSERT_EQ('a', buf[0]);
     delete[] buf;
     ThreadShutdown();
@@ -48,7 +48,7 @@ TEST_F(SerialIOTest, substitute_port) {
     ASSERT_TRUE(io->Open(_T("COM4"),_T("baud=115200 parity=N data=8 stop=1")));
     char * buf;
     int readlen;
-    ASSERT_TRUE(io->ReadByEvent(&buf, &readlen, 3000));
+    ASSERT_TRUE(io->ReadChunk(&buf, &readlen, 3000));
     ASSERT_EQ('a', buf[0]);
     delete[] buf;
     ThreadShutdown();

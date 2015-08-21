@@ -64,7 +64,7 @@ bool SerialIO::Close()
     return   CloseSerialHandle();
 }
 
-bool SerialIO::ReadByEvent(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
+bool SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
 {
     //TODO lock
     bool success = TryWin32(::PurgeComm(handle_, PURGE_RXCLEAR | PURGE_RXABORT), __FUNCTION__, __LINE__);
