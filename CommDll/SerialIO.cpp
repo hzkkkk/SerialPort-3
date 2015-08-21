@@ -4,9 +4,7 @@
 #include "Win32Wrap.h"
 #include "inline.h"
 #include "SerialIO.h"
-#include "atlstr.h"
 
-#include <iostream>
 
 SerialIO::SerialIO()
     :handle_(INVALID_HANDLE_VALUE)
@@ -98,43 +96,43 @@ int SerialIO::Read(HANDLE handle, char* lpBuffer, DWORD nNumberOfBytesToRead, DW
 {
     AutoLock lock(&readlock_);
 
-    DWORD nread = 0;
-    bool success = TryWin32AsyncIO(::ReadFile(handle, lpBuffer, nNumberOfBytesToRead, &nread, &readov_), __FUNCTION__, __LINE__);
+    bool success = TryWin32AsyncIO(::ReadFile(handle, lpBuffer, nNumberOfBytesToRead, NULL, &readov_), __FUNCTION__, __LINE__);
     DWORD reason = 0;
     if (success) {
         success = TryWin32(WaitForSingleObjectB(readov_.hEvent, dwTimeoutMs, &reason), __FUNCTION__, __LINE__);
     }
+    DWORD numberOfBytes = 0;
     if (success) {
         if (reason == WAIT_OBJECT_0) {
-            success = TryWin32(::GetOverlappedResult(handle, &readov_, &nread, TRUE), __FUNCTION__, __LINE__);
+            success = TryWin32(::GetOverlappedResult(handle, &readov_, &numberOfBytes, TRUE), __FUNCTION__, __LINE__);
         }
         else if (reason == WAIT_TIMEOUT) {
             TryWin32(::CancelIo(handle), __FUNCTION__, __LINE__);
         }
     }
-    return nread;
+    return numberOfBytes;
 }
 
 int SerialIO::Write(HANDLE handle, const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs)
 {
     AutoLock lock(&writelock_);
 
-    DWORD nwritten = 0;
-    bool success = TryWin32AsyncIO(::WriteFile(handle, lpBuffer, nNumberOfBytesToWrite, &nwritten, &writeov_), __FUNCTION__, __LINE__);
+    bool success = TryWin32AsyncIO(::WriteFile(handle, lpBuffer, nNumberOfBytesToWrite, NULL, &writeov_), __FUNCTION__, __LINE__);
     DWORD reason = 0;
     if (success) {
         success = TryWin32(WaitForSingleObjectB(writeov_.hEvent, dwTimeoutMs, &reason), __FUNCTION__, __LINE__);
     }
 
+    DWORD numberOfBytes = 0;
     if (success) {
         if (reason == WAIT_OBJECT_0) {
-            success = TryWin32(::GetOverlappedResult(handle, &writeov_, &nwritten, TRUE), __FUNCTION__, __LINE__);
+            success = TryWin32(::GetOverlappedResult(handle, &writeov_, &numberOfBytes, TRUE), __FUNCTION__, __LINE__);
         }
         else if (reason == WAIT_TIMEOUT) {
             TryWin32(CancelIo(handle), __FUNCTION__, __LINE__);
         }
     }
-    return nwritten;
+    return numberOfBytes;
 }
 
 bool SerialIO::IsInitialized()

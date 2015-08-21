@@ -29,9 +29,8 @@ static unsigned __stdcall Echo(void*)
         if (c == 'q') {
             break;
         }
-        if ((::WriteFile(shandle, &c, 1, &read, NULL)) != 1) {
+        if (!::WriteFile(shandle, &c, 1, &read, NULL))
             break;
-        }
     }
     ::CloseHandle(shandle);
     _endthreadex(0);
@@ -56,10 +55,10 @@ static unsigned __stdcall Bark(void*)
     while (!stop) {
         char c = 'a';
         DWORD read = 0;
-        if ((::WriteFile(shandle, &c, 1, &read, NULL)) != 1) {
+        if (!::WriteFile(shandle, &c, 1, &read, NULL))
             break;
-        }
-        Sleep(1000);
+
+        Sleep(500);
     }
     ::CloseHandle(shandle);
     _endthreadex(0);
@@ -89,10 +88,11 @@ static unsigned __stdcall MoreBark(void*)
     }
     while (!stop) {
         DWORD read = 0;
-        if ((::WriteFile(shandle, alpha, 26, &read, NULL)) != 26) {
+        if (!::WriteFile(shandle, alpha, 26, &read, NULL))
             break;
-        }
-        Sleep(1000);
+        if (read != 26)
+            break;
+        Sleep(500);
     }
     delete[] alpha;
 
