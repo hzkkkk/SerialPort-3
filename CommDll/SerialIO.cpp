@@ -70,42 +70,28 @@ bool SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
 
     bool success = TryWin32(::PurgeComm(handle_, PURGE_RXCLEAR | PURGE_RXABORT), __FUNCTION__, __LINE__);
     char c = 0;
-    int len = 0;
+    int readlen = 0;
     if (success) {
-        len = Read(handle_, &c, 1, dwTimeoutMs);
-        if (len == 0) {
-            success = false;
-        }
+        readlen = Read(handle_, &c, 1, dwTimeoutMs);
+        success = readlen != 0;
     }
+
     COMSTAT stat = { 0 };
     DWORD dwErrors = 0;
     if (success) {
-        success = TryWin32(::ClearCommError(handle_, &dwErrors, &stat), __FUNCTION__, __LINE__);
+        success = TryClearCommError(handle_, &dwErrors, &stat, __FUNCTION__, __LINE__);
     }
-    if (success) {
-        if (dwErrors != 0) {
-            success = false;
-        }
-    }
+
     char* buffer = NULL;
     if (success) {
         buffer = new char[stat.cbInQue + 1];
-        // TODO bufferÇÃÉTÉCÉY
         buffer[0] = c;
-        int read = Read(handle_, buffer + 1, stat.cbInQue, 0);
-        if (read != stat.cbInQue) {
-            //TODO è¡Ç∑
-            std::cout << read << "@@@@@@@@@@@:" << stat.cbInQue << std::endl;
-
-        }
-        *lpBuffer = buffer;
-        *outlen = stat.cbInQue + 1;
+        readlen += Read(handle_, buffer + 1, stat.cbInQue, 0);
     }
-    if (!success) {
-        *lpBuffer = NULL;
-        *outlen = 0;
 
-    }
+    *lpBuffer = success ? buffer : NULL;
+    *outlen = success ? readlen : 0;
+
     return success;
 }
 int SerialIO::Read(HANDLE handle, char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs)

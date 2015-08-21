@@ -10,5 +10,6 @@ bool FormatMessageB(DWORD, LPCVOID, DWORD, DWORD, LPTSTR, DWORD, DWORD*, va_list
 bool TryWin32(bool, const  char *, int);
 bool TryWin32AsyncIO(bool, const char *, int);
 bool Try(bool, const  char *, int);
+bool TryClearCommError(HANDLE, LPDWORD, LPCOMSTAT, const char *, int);
 
 #endif

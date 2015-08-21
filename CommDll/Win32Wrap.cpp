@@ -117,3 +117,22 @@ static LPTSTR GetLastErrorMsg(DWORD dwLastError)
     }
     return NULL;
 }
+bool TryClearCommError(
+    HANDLE hFile,     // 通信デバイスのハンドル
+    LPDWORD lpErrors, // エラーコードを受け取る変数へのポインタ
+    LPCOMSTAT lpStat,  // 通信状態バッファへのポインタ
+    const char * function,
+    int linenumber)
+{
+
+    if (!::ClearCommError(hFile, lpErrors, lpStat)) {
+        DWORD dwLastError = ::GetLastError();
+        PrintErrorMsg(dwLastError, function, linenumber);
+        return false;
+    }
+    if (*lpErrors) {
+        std::wcout << "reason =[" << *lpErrors << "] func=" << function << " line=" << linenumber << std::endl;
+        return false;
+    }
+    return true;
+}
