@@ -21,7 +21,7 @@ protected:
 
 TEST_F(SerialIOTest, open_1byte_read) {
     StartBarkServer(_T("COM4"), _T("baud=115200 parity=N data=8 stop=1"));
-    ASSERT_TRUE(io->Open(3));
+    ASSERT_TRUE(io->Open(_T("COM3"),_T("baud=115200 parity=N data=8 stop=1")));
     char * buf;
     int readlen;
     ASSERT_TRUE(io->ReadByEvent(&buf, &readlen, 2000));
@@ -31,7 +31,7 @@ TEST_F(SerialIOTest, open_1byte_read) {
 }
 TEST_F(SerialIOTest, substitute_port) {
     StartBarkServer(_T("COM3"), _T("baud=115200 parity=N data=8 stop=1"));
-    ASSERT_TRUE(io->Open(4));
+    ASSERT_TRUE(io->Open(_T("COM4"),_T("baud=115200 parity=N data=8 stop=1")));
     char * buf;
     int readlen;
     ASSERT_TRUE(io->ReadByEvent(&buf, &readlen, 3000));

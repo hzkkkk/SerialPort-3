@@ -7,7 +7,7 @@ class DLLAPI SerialIO
 public:
     SerialIO();
     virtual ~SerialIO();
-    bool Open(int);
+    bool SerialIO::Open(const TCHAR*, const TCHAR*);
     bool ReadByEvent(char**, int*, DWORD);
     int Read(HANDLE, char*, DWORD, DWORD);
     int Write(HANDLE, const char*, DWORD, DWORD);

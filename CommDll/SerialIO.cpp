@@ -32,23 +32,16 @@ SerialIO::~SerialIO()
     ::DeleteCriticalSection(&writelock_);
 }
 
-bool SerialIO::Open(int number)
+bool SerialIO::Open(const TCHAR* name, const TCHAR* param)
 {
-    // TODO COMMparam‚ð“n‚·
-    // TODO COMMname‚ð“n‚·
     bool success = TryWin32(CreateEventB(NULL, FALSE, FALSE, NULL, &readov_.hEvent), __FUNCTION__, __LINE__);
 
     if (success) {
         success = TryWin32(CreateEventB(NULL, FALSE, FALSE, NULL, &writeov_.hEvent), __FUNCTION__, __LINE__);
     }
 
-    TCHAR comName[BUFSIZ] = { 0 };
     if (success) {
-        success = Try(createCommNumber(comName, BUFSIZ, number), __FUNCTION__, __LINE__);
-    }
-
-    if (success) {
-        success = TryWin32(CreateFileB(comName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL, &handle_), __FUNCTION__, __LINE__);
+        success = TryWin32(CreateFileB(name, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL, &handle_), __FUNCTION__, __LINE__);
     }
 
     DCB dcb = { 0 };
@@ -56,13 +49,8 @@ bool SerialIO::Open(int number)
         success = TryWin32(::GetCommState(handle_, &dcb), __FUNCTION__, __LINE__);
     }
 
-    TCHAR def[BUFSIZ] = { 0 };
     if (success) {
-        success = Try(createCommParam(def, BUFSIZ), __FUNCTION__, __LINE__);
-    }
-
-    if (success) {
-        success = TryWin32(::BuildCommDCB(def, &dcb), __FUNCTION__, __LINE__);
+        success = TryWin32(::BuildCommDCB(param, &dcb), __FUNCTION__, __LINE__);
     }
 
     if (success) {
