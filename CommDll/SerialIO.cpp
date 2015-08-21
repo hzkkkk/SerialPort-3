@@ -66,7 +66,8 @@ bool SerialIO::Close()
 
 bool SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
 {
-    //TODO lock
+    AutoLock lock(&readlock_);
+
     bool success = TryWin32(::PurgeComm(handle_, PURGE_RXCLEAR | PURGE_RXABORT), __FUNCTION__, __LINE__);
     char c = 0;
     int len = 0;
