@@ -43,6 +43,20 @@ TEST_F(SerialIOTest, open_1byte_read) {
     delete[] buf;
     ThreadShutdown();
 }
+
+TEST_F(SerialIOTest, open_multibyte_read) {
+    StartMoreBarkServer(_T("COM4"), _T("baud=115200 parity=N data=8 stop=1"));
+    ASSERT_TRUE(io->Open(_T("COM3"),_T("baud=115200 parity=N data=8 stop=1")));
+    char * buf;
+    int readlen;
+    ASSERT_TRUE(io->ReadChunk(&buf, &readlen, 3000));
+    char expect[] = { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z' };
+    for (int i = 0; i < readlen; i++) {
+        ASSERT_EQ(buf[i], expect[i]);
+    }
+    delete[] buf;
+    ThreadShutdown();
+}
 TEST_F(SerialIOTest, substitute_port) {
     StartBarkServer(_T("COM3"), _T("baud=115200 parity=N data=8 stop=1"));
     ASSERT_TRUE(io->Open(_T("COM4"),_T("baud=115200 parity=N data=8 stop=1")));

@@ -17,7 +17,7 @@ void ThreadShutdown()
     WaitForSingleObject(thread, INFINITE);
 }
 
-static unsigned __stdcall Echo(void* )
+static unsigned __stdcall Echo(void*)
 {
     if (!CreateCom()) {
         return 1;
@@ -47,7 +47,7 @@ void StartEchoServer(const TCHAR *name, const TCHAR* param)
     thread = (HANDLE)_beginthreadex(NULL, 0, &Echo, NULL, 0, &threadID);
 }
 
-static unsigned __stdcall Bark(void* )
+static unsigned __stdcall Bark(void*)
 {
     if (!CreateCom()) {
         return 1;
@@ -73,6 +73,41 @@ void StartBarkServer(const TCHAR *name, const TCHAR* param)
     stop = false;
     unsigned threadID;
     thread = (HANDLE)_beginthreadex(NULL, 0, &Bark, NULL, 0, &threadID);
+}
+
+static unsigned __stdcall MoreBark(void*)
+{
+    if (!CreateCom()) {
+        return 1;
+    }
+
+    char c = 'a';
+    char* alpha = new char[26];
+    for (int i = 0; i < 26; i++) {
+        alpha[i] = c;
+        c++;
+    }
+    while (!stop) {
+        DWORD read = 0;
+        if ((::WriteFile(shandle, alpha, 26, &read, NULL)) != 26) {
+            break;
+        }
+        Sleep(1000);
+    }
+    delete[] alpha;
+
+    ::CloseHandle(shandle);
+    _endthreadex(0);
+    return 1;
+}
+void StartMoreBarkServer(const TCHAR *name, const TCHAR* param)
+{
+    sname = name;
+    sparam = param;
+
+    stop = false;
+    unsigned threadID;
+    thread = (HANDLE)_beginthreadex(NULL, 0, &MoreBark, NULL, 0, &threadID);
 }
 
 static bool CreateCom()
