@@ -19,6 +19,20 @@ protected:
     SerialIO* io;
 };
 
+TEST_F(SerialIOTest, open_close) {
+    ASSERT_TRUE(io->Open(_T("COM3"),_T("baud=115200 parity=N data=8 stop=1")));
+    ASSERT_TRUE(io->Close());
+}
+
+TEST_F(SerialIOTest, open_close2) {
+    ASSERT_TRUE(io->Open(_T("COM3"),_T("baud=115200 parity=N data=8 stop=1")));
+    //Close–Y‚ê
+    delete io;
+    io = new SerialIO();
+    ASSERT_TRUE(io->Open(_T("COM3"),_T("baud=115200 parity=N data=8 stop=1")));
+    ASSERT_TRUE(io->Close());
+
+}
 TEST_F(SerialIOTest, open_1byte_read) {
     StartBarkServer(_T("COM4"), _T("baud=115200 parity=N data=8 stop=1"));
     ASSERT_TRUE(io->Open(_T("COM3"),_T("baud=115200 parity=N data=8 stop=1")));

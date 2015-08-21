@@ -59,6 +59,11 @@ bool SerialIO::Open(const TCHAR* name, const TCHAR* param)
     return success;
 }
 
+bool SerialIO::Close()
+{
+    return   CloseSerialHandle();
+}
+
 bool SerialIO::ReadByEvent(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
 {
     //TODO lock
