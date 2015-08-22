@@ -128,7 +128,7 @@ int SerialIO::Write(HANDLE handle, const char* lpBuffer, DWORD nNumberOfBytesToW
         if (reason == WAIT_OBJECT_0) {
             success = TryWin32(::GetOverlappedResult(handle, &writeov_, &numberOfBytes, TRUE), __FUNCTION__, __LINE__);
         }
-        else if (reason == WAIT_TIMEOUT) {
+        else if (reason == WAIT_TIMEOUT || WAIT_ABANDONED) {
             TryWin32(CancelIo(handle), __FUNCTION__, __LINE__);
         }
     }
