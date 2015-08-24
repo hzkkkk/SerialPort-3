@@ -66,7 +66,7 @@ bool SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
 {
     AutoLock lock(&readlock_);
 
-    bool success = TryWin32(::PurgeComm(handle_, PURGE_RXCLEAR | PURGE_RXABORT), __FUNCTION__, __LINE__);
+    bool success = true;
     char c = 0;
     int readlen = 0;
     if (success) {
@@ -84,7 +84,9 @@ bool SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
     if (success) {
         buffer = new char[stat.cbInQue + 1];
         buffer[0] = c;
-        readlen += Read(handle_, buffer + 1, stat.cbInQue, 0);
+        if (stat.cbInQue) {
+            readlen += Read(handle_, buffer + 1, stat.cbInQue, 0);
+        }
     }
 
     *lpBuffer = success ? buffer : NULL;
