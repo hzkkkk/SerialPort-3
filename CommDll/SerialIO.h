@@ -9,9 +9,15 @@ public:
     virtual ~SerialIO();
     bool Open(const TCHAR*, const TCHAR*);
     bool Close();
-    bool ReadChunk(char**, int*, DWORD);
-    int Read(HANDLE, char*, DWORD, DWORD);
-    int Write(HANDLE, const char*, DWORD, DWORD);
+    int ReadChunk(char**, int*, DWORD);
+    int Read(char*, DWORD, DWORD, DWORD*);
+    int Write(const char*, DWORD, DWORD, DWORD*);
+    enum {
+        IO_SUCCESS,
+        IO_TIME_OUT,
+        IO_ERROR,
+    };
+
 private:
     SerialIO(const AsyncIO&);
     void operator=(const SerialIO&);

@@ -62,79 +62,97 @@ bool SerialIO::Close()
     return   CloseSerialHandle();
 }
 
-bool SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
+int SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
 {
     AutoLock lock(&readlock_);
 
     bool success = true;
+    int result = IO_SUCCESS;
+    DWORD firstread = 0;
     char c = 0;
-    int readlen = 0;
-    if (success) {
-        readlen = Read(handle_, &c, 1, dwTimeoutMs);
-        success = readlen != 0;
+    if ((result = Read(&c, 1, dwTimeoutMs, &firstread)) != IO_SUCCESS) {
+        success = false;
     }
 
     COMSTAT stat = { 0 };
     DWORD dwErrors = 0;
     if (success) {
-        success = TryClearCommError(handle_, &dwErrors, &stat, __FUNCTION__, __LINE__);
+        if (!(success = TryClearCommError(handle_, &dwErrors, &stat, __FUNCTION__, __LINE__))) {
+            result = IO_ERROR;
+        }
     }
 
     char* buffer = NULL;
+    DWORD seconderead = 0;
     if (success) {
         buffer = new char[stat.cbInQue + 1];
         buffer[0] = c;
         if (stat.cbInQue) {
-            readlen += Read(handle_, buffer + 1, stat.cbInQue, 0);
+            if ((result = Read(buffer + 1, stat.cbInQue, 0, &seconderead)) != IO_SUCCESS) {
+                success = false;
+            }
         }
     }
 
     *lpBuffer = success ? buffer : NULL;
-    *outlen = success ? readlen : 0;
+    *outlen = success ? firstread + seconderead : 0;
 
-    return success;
+    return result;
 }
-int SerialIO::Read(HANDLE handle, char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs)
+
+int SerialIO::Read( char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs, DWORD* readlen)
 {
     AutoLock lock(&readlock_);
 
-    bool success = TryWin32AsyncIO(::ReadFile(handle, lpBuffer, nNumberOfBytesToRead, NULL, &readov_), __FUNCTION__, __LINE__);
+    bool success = TryWin32AsyncIO(::ReadFile(handle_, lpBuffer, nNumberOfBytesToRead, NULL, &readov_), __FUNCTION__, __LINE__);
     DWORD reason = 0;
     if (success) {
         success = TryWin32(WaitForSingleObjectB(readov_.hEvent, dwTimeoutMs, &reason), __FUNCTION__, __LINE__);
     }
-    DWORD numberOfBytes = 0;
     if (success) {
         if (reason == WAIT_OBJECT_0) {
-            success = TryWin32(::GetOverlappedResult(handle, &readov_, &numberOfBytes, TRUE), __FUNCTION__, __LINE__);
+            success = TryWin32(::GetOverlappedResult(handle_, &readov_, readlen, TRUE), __FUNCTION__, __LINE__);
         }
         else if (reason == WAIT_TIMEOUT) {
-            TryWin32(::CancelIo(handle), __FUNCTION__, __LINE__);
+            success = TryWin32(::CancelIo(handle_), __FUNCTION__, __LINE__);
         }
     }
-    return numberOfBytes;
+
+    if (success && reason == WAIT_OBJECT_0) {
+        return IO_SUCCESS;
+    }
+    else if (success && reason == WAIT_TIMEOUT) {
+        return IO_TIME_OUT;
+    }
+    return IO_ERROR;
 }
 
-int SerialIO::Write(HANDLE handle, const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs)
+int SerialIO::Write( const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs, DWORD* written)
 {
     AutoLock lock(&writelock_);
 
-    bool success = TryWin32AsyncIO(::WriteFile(handle, lpBuffer, nNumberOfBytesToWrite, NULL, &writeov_), __FUNCTION__, __LINE__);
+    bool success = TryWin32AsyncIO(::WriteFile(handle_, lpBuffer, nNumberOfBytesToWrite, NULL, &writeov_), __FUNCTION__, __LINE__);
     DWORD reason = 0;
     if (success) {
         success = TryWin32(WaitForSingleObjectB(writeov_.hEvent, dwTimeoutMs, &reason), __FUNCTION__, __LINE__);
     }
 
-    DWORD numberOfBytes = 0;
     if (success) {
         if (reason == WAIT_OBJECT_0) {
-            success = TryWin32(::GetOverlappedResult(handle, &writeov_, &numberOfBytes, TRUE), __FUNCTION__, __LINE__);
+            success = TryWin32(::GetOverlappedResult(handle_, &writeov_, written, TRUE), __FUNCTION__, __LINE__);
         }
-        else if (reason == WAIT_TIMEOUT || WAIT_ABANDONED) {
-            TryWin32(CancelIo(handle), __FUNCTION__, __LINE__);
+        else if (reason == WAIT_TIMEOUT) {
+            success = TryWin32(::CancelIo(handle_), __FUNCTION__, __LINE__);
         }
     }
-    return numberOfBytes;
+
+    if (success && reason == WAIT_OBJECT_0) {
+        return IO_SUCCESS;
+    }
+    else if (success && reason == WAIT_TIMEOUT) {
+        return IO_TIME_OUT;
+    }
+    return IO_ERROR;
 }
 
 bool SerialIO::IsInitialized()
