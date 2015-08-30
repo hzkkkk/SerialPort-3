@@ -52,23 +52,25 @@ bool SerialIO::Close()
 	return  CloseResource();
 }
 
-enum SerialIO::code SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
+enum SerialIO::code SerialIO::ReadChunk(char** lpBuffer, int* buflen, DWORD dwTimeoutMs)
 {
 	if (!IsInitialized()) {
 		return SerialIO::FAIL;
 	}
+
 	bool success = true;
 	enum code result = SerialIO::SUCCESS;
+
 	DWORD firstread = 0;
 	char c = 0;
-	if ((result = Read(&c, 1, dwTimeoutMs, &firstread)) != SerialIO::SUCCESS) {
+	if ((result = Read(&c, 1, &firstread, dwTimeoutMs)) != SerialIO::SUCCESS) {
 		success = false;
 	}
 
 	COMSTAT stat = { 0 };
 	DWORD dwErrors = 0;
 	if (success) {
-		if (!(success = w32b::TryClearCommError(handle_, &dwErrors, &stat, __FUNCTION__, __LINE__))) {
+		if ((success = w32b::TryClearCommError(handle_, &dwErrors, &stat, __FUNCTION__, __LINE__)) == false) {
 			result = SerialIO::FAIL;
 		}
 	}
@@ -81,18 +83,18 @@ enum SerialIO::code SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTi
 
 	DWORD seconderead = 0;
 	if (success && stat.cbInQue > 0) {
-		if ((result = Read(buffer + 1, stat.cbInQue, 0, &seconderead)) != SerialIO::SUCCESS) {
+		if ((result = Read(buffer + 1, stat.cbInQue, &seconderead, 0)) != SerialIO::SUCCESS) {
 			success = false;
 		}
 	}
 
 	*lpBuffer = success ? buffer : NULL;
-	*outlen = success ? firstread + seconderead : 0;
+	*buflen = success ? firstread + seconderead : 0;
 
 	return result;
 }
 
-enum SerialIO::code SerialIO::Read(char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs, DWORD* readlen)
+enum SerialIO::code SerialIO::Read(char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD* readlen, DWORD dwTimeoutMs)
 {
 	if (!IsInitialized()) {
 		return SerialIO::FAIL;
@@ -121,7 +123,7 @@ enum SerialIO::code SerialIO::Read(char* lpBuffer, DWORD nNumberOfBytesToRead, D
 	return SerialIO::FAIL;
 }
 
-enum SerialIO::code  SerialIO::Write(const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs, DWORD* written)
+enum SerialIO::code  SerialIO::Write(const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD* written, DWORD dwTimeoutMs)
 {
 	if (!IsInitialized()) {
 		return SerialIO::FAIL;
@@ -159,11 +161,11 @@ bool SerialIO::IsInitialized()
 bool SerialIO::CloseResource()
 {
 	bool close_readov = true;
-	if (!readov_.hEvent) {
+	if (readov_.hEvent) {
 		close_readov = w32b::TryWin32(::CloseHandle(readov_.hEvent), __FUNCTION__, __LINE__);
 	}
 	bool close_writeov = true;
-	if (!writeov_.hEvent) {
+	if (writeov_.hEvent) {
 		close_writeov = w32b::TryWin32(::CloseHandle(writeov_.hEvent), __FUNCTION__, __LINE__);
 	}
 	bool close_handle = true;

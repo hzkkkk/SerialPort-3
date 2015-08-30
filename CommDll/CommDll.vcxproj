@@ -145,7 +145,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AutoLock.h" />
-    <ClInclude Include="inline.h" />
     <ClInclude Include="SerialIO.h" />
     <ClInclude Include="Win32Bool.h" />
   </ItemGroup>
@@ -165,7 +164,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="inline.cpp" />
     <ClCompile Include="SerialIO.cpp" />
     <ClCompile Include="Win32bool.cpp" />
   </ItemGroup>
