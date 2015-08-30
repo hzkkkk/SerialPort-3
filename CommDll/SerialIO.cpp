@@ -1,6 +1,4 @@
-#include "stdafx.h"
-#include "CommDll.h"
-#include "AutoLock.h"
+#include <windows.h>
 #include "Win32Wrap.h"
 #include "inline.h"
 #include "SerialIO.h"
@@ -64,7 +62,6 @@ bool SerialIO::Close()
 
 int SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
 {
-    AutoLock lock(&readlock_);
 
     bool success = true;
     int result = IO_SUCCESS;
@@ -102,7 +99,6 @@ int SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
 
 int SerialIO::Read( char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs, DWORD* readlen)
 {
-    AutoLock lock(&readlock_);
 
     bool success = TryWin32AsyncIO(::ReadFile(handle_, lpBuffer, nNumberOfBytesToRead, NULL, &readov_), __FUNCTION__, __LINE__);
     DWORD reason = 0;
@@ -129,7 +125,6 @@ int SerialIO::Read( char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutM
 
 int SerialIO::Write( const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs, DWORD* written)
 {
-    AutoLock lock(&writelock_);
 
     bool success = TryWin32AsyncIO(::WriteFile(handle_, lpBuffer, nNumberOfBytesToWrite, NULL, &writeov_), __FUNCTION__, __LINE__);
     DWORD reason = 0;

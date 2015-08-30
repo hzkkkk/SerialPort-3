@@ -5,7 +5,6 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include "EchoComm.h"
-#include "../CommDll/CommDll.h"
 #include "../CommDll/SerialIO.h"
 
 class SerialIOTest : public ::testing::Test {
@@ -34,7 +33,7 @@ TEST_F(SerialIOTest, open_close2) {
 
 }
 TEST_F(SerialIOTest, open_1byte_read) {
-    StartBarkServer(_T("COM4"), _T("baud=115200 parity=N data=8 stop=1"));
+    StartBarkServer(_T("COM5"), _T("baud=115200 parity=N data=8 stop=1"));
     ASSERT_TRUE(io->Open(_T("COM3"), _T("baud=115200 parity=N data=8 stop=1")));
     char * buf;
     int readlen;
@@ -45,7 +44,7 @@ TEST_F(SerialIOTest, open_1byte_read) {
 }
 
 TEST_F(SerialIOTest, open_multibyte_read) {
-    StartMoreBarkServer(_T("COM4"), _T("baud=115200 parity=N data=8 stop=1"));
+    StartMoreBarkServer(_T("COM5"), _T("baud=115200 parity=N data=8 stop=1"));
     ASSERT_TRUE(io->Open(_T("COM3"), _T("baud=115200 parity=N data=8 stop=1")));
     char * buf;
     int readlen;
@@ -59,7 +58,7 @@ TEST_F(SerialIOTest, open_multibyte_read) {
 }
 TEST_F(SerialIOTest, substitute_port) {
     StartBarkServer(_T("COM3"), _T("baud=115200 parity=N data=8 stop=1"));
-    ASSERT_TRUE(io->Open(_T("COM4"), _T("baud=115200 parity=N data=8 stop=1")));
+    ASSERT_TRUE(io->Open(_T("COM5"), _T("baud=115200 parity=N data=8 stop=1")));
     char * buf;
     int readlen;
     ASSERT_EQ(SerialIO::IO_SUCCESS, io->ReadChunk(&buf, &readlen, 3000));
@@ -69,7 +68,7 @@ TEST_F(SerialIOTest, substitute_port) {
 }
 
 TEST_F(SerialIOTest, open_readtimeout) {
-    StartEchoServer(_T("COM4"), _T("baud=115200 parity=N data=8 stop=1"));
+    StartEchoServer(_T("COM5"), _T("baud=115200 parity=N data=8 stop=1"));
     ASSERT_TRUE(io->Open(_T("COM3"), _T("baud=115200 parity=N data=8 stop=1")));
     char * buf;
     int readlen;

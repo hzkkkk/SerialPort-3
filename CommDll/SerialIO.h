@@ -1,6 +1,11 @@
 #ifndef _SERIAL_IO_H_
 #define _SERIAL_IO_H_
 
+#ifdef COMMDLL_EXPORTS
+#define DLLAPI __declspec(dllexport)
+#else
+#define DLLAPI __declspec(dllimport)
+#endif
 
 class DLLAPI SerialIO
 {
@@ -19,7 +24,6 @@ public:
     };
 
 private:
-    SerialIO(const AsyncIO&);
     void operator=(const SerialIO&);
     bool IsInitialized();
     bool CloseSerialHandle();

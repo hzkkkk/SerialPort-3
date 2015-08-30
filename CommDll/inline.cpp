@@ -1,4 +1,5 @@
-#include "stdafx.h"
+#include <windows.h>
+#include <tchar.h>
 #include "inline.h"
 
 bool createCommNumber(TCHAR *buffer, size_t sizeOfBuffer,int num) {

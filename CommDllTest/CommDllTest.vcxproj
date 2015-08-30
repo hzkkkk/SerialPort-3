@@ -154,8 +154,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AsyncIOTest.cpp" />
-    <ClCompile Include="CommDllTest.cpp" />
     <ClCompile Include="EchoComm.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SerialIOTest.cpp" />
