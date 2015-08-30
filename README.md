@@ -1,2 +1,2 @@
 # SerialPort
-Windows Serial IO
+Windows Serial IO Class
