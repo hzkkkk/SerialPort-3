@@ -149,12 +149,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EchoComm.h" />
+    <ClInclude Include="TestServer.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EchoComm.cpp" />
+    <ClCompile Include="TestServer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SerialIOTest.cpp" />
     <ClCompile Include="stdafx.cpp">
