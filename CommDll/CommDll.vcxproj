@@ -147,7 +147,7 @@
     <ClInclude Include="AutoLock.h" />
     <ClInclude Include="inline.h" />
     <ClInclude Include="SerialIO.h" />
-    <ClInclude Include="Win32Wrap.h" />
+    <ClInclude Include="Win32Bool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutoLock.cpp" />
@@ -167,7 +167,7 @@
     </ClCompile>
     <ClCompile Include="inline.cpp" />
     <ClCompile Include="SerialIO.cpp" />
-    <ClCompile Include="Win32Wrap.cpp" />
+    <ClCompile Include="Win32bool.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

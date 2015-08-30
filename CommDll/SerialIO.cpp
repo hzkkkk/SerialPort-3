@@ -1,8 +1,9 @@
 #include <windows.h>
-#include "Win32Wrap.h"
+#include "Win32Bool.h"
 #include "inline.h"
 #include "SerialIO.h"
 
+namespace w32b = win32bool;
 
 SerialIO::SerialIO()
     :handle_(INVALID_HANDLE_VALUE)
@@ -18,10 +19,10 @@ SerialIO::~SerialIO()
 {
     CloseSerialHandle();
     if (readov_.hEvent != INVALID_HANDLE_VALUE) {
-        TryWin32(::CloseHandle(readov_.hEvent), __FUNCTION__, __LINE__);
+        w32b::TryWin32(::CloseHandle(readov_.hEvent), __FUNCTION__, __LINE__);
     }
     if (writeov_.hEvent != INVALID_HANDLE_VALUE) {
-        TryWin32(::CloseHandle(writeov_.hEvent), __FUNCTION__, __LINE__);
+        w32b::TryWin32(::CloseHandle(writeov_.hEvent), __FUNCTION__, __LINE__);
     }
 
     ::DeleteCriticalSection(&readlock_);
@@ -30,27 +31,27 @@ SerialIO::~SerialIO()
 
 bool SerialIO::Open(const TCHAR* name, const TCHAR* param)
 {
-    bool success = TryWin32(CreateEventB(NULL, FALSE, FALSE, NULL, &readov_.hEvent), __FUNCTION__, __LINE__);
+    bool success = w32b::TryWin32(w32b::CreateEvent(NULL, FALSE, FALSE, NULL, &readov_.hEvent), __FUNCTION__, __LINE__);
 
     if (success) {
-        success = TryWin32(CreateEventB(NULL, FALSE, FALSE, NULL, &writeov_.hEvent), __FUNCTION__, __LINE__);
+        success = w32b::TryWin32(w32b::CreateEvent(NULL, FALSE, FALSE, NULL, &writeov_.hEvent), __FUNCTION__, __LINE__);
     }
 
     if (success) {
-        success = TryWin32(CreateFileB(name, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL, &handle_), __FUNCTION__, __LINE__);
+        success = w32b::TryWin32(w32b::CreateFile(name, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL, &handle_), __FUNCTION__, __LINE__);
     }
 
     DCB dcb = { 0 };
     if (success) {
-        success = TryWin32(::GetCommState(handle_, &dcb), __FUNCTION__, __LINE__);
+        success = w32b::TryWin32(::GetCommState(handle_, &dcb), __FUNCTION__, __LINE__);
     }
 
     if (success) {
-        success = TryWin32(::BuildCommDCB(param, &dcb), __FUNCTION__, __LINE__);
+        success = w32b::TryWin32(::BuildCommDCB(param, &dcb), __FUNCTION__, __LINE__);
     }
 
     if (success) {
-        success = TryWin32(::SetCommState(handle_, &dcb), __FUNCTION__, __LINE__);
+        success = w32b::TryWin32(::SetCommState(handle_, &dcb), __FUNCTION__, __LINE__);
     }
     return success;
 }
@@ -74,7 +75,7 @@ int SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
     COMSTAT stat = { 0 };
     DWORD dwErrors = 0;
     if (success) {
-        if (!(success = TryClearCommError(handle_, &dwErrors, &stat, __FUNCTION__, __LINE__))) {
+        if (!(success = w32b::TryClearCommError(handle_, &dwErrors, &stat, __FUNCTION__, __LINE__))) {
             result = IO_ERROR;
         }
     }
@@ -100,17 +101,17 @@ int SerialIO::ReadChunk(char** lpBuffer, int* outlen, DWORD dwTimeoutMs)
 int SerialIO::Read( char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutMs, DWORD* readlen)
 {
 
-    bool success = TryWin32AsyncIO(::ReadFile(handle_, lpBuffer, nNumberOfBytesToRead, NULL, &readov_), __FUNCTION__, __LINE__);
+    bool success = w32b::TryWin32AsyncIO(::ReadFile(handle_, lpBuffer, nNumberOfBytesToRead, NULL, &readov_), __FUNCTION__, __LINE__);
     DWORD reason = 0;
     if (success) {
-        success = TryWin32(WaitForSingleObjectB(readov_.hEvent, dwTimeoutMs, &reason), __FUNCTION__, __LINE__);
+        success = w32b::TryWin32(w32b::WaitForSingleObject(readov_.hEvent, dwTimeoutMs, &reason), __FUNCTION__, __LINE__);
     }
     if (success) {
         if (reason == WAIT_OBJECT_0) {
-            success = TryWin32(::GetOverlappedResult(handle_, &readov_, readlen, TRUE), __FUNCTION__, __LINE__);
+            success = w32b::TryWin32(::GetOverlappedResult(handle_, &readov_, readlen, TRUE), __FUNCTION__, __LINE__);
         }
         else if (reason == WAIT_TIMEOUT) {
-            success = TryWin32(::CancelIo(handle_), __FUNCTION__, __LINE__);
+            success = w32b::TryWin32(::CancelIo(handle_), __FUNCTION__, __LINE__);
         }
     }
 
@@ -126,18 +127,18 @@ int SerialIO::Read( char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD dwTimeoutM
 int SerialIO::Write( const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD dwTimeoutMs, DWORD* written)
 {
 
-    bool success = TryWin32AsyncIO(::WriteFile(handle_, lpBuffer, nNumberOfBytesToWrite, NULL, &writeov_), __FUNCTION__, __LINE__);
+    bool success = w32b::TryWin32AsyncIO(::WriteFile(handle_, lpBuffer, nNumberOfBytesToWrite, NULL, &writeov_), __FUNCTION__, __LINE__);
     DWORD reason = 0;
     if (success) {
-        success = TryWin32(WaitForSingleObjectB(writeov_.hEvent, dwTimeoutMs, &reason), __FUNCTION__, __LINE__);
+        success = w32b::TryWin32(w32b::WaitForSingleObject(writeov_.hEvent, dwTimeoutMs, &reason), __FUNCTION__, __LINE__);
     }
 
     if (success) {
         if (reason == WAIT_OBJECT_0) {
-            success = TryWin32(::GetOverlappedResult(handle_, &writeov_, written, TRUE), __FUNCTION__, __LINE__);
+            success = w32b::TryWin32(::GetOverlappedResult(handle_, &writeov_, written, TRUE), __FUNCTION__, __LINE__);
         }
         else if (reason == WAIT_TIMEOUT) {
-            success = TryWin32(::CancelIo(handle_), __FUNCTION__, __LINE__);
+            success = w32b::TryWin32(::CancelIo(handle_), __FUNCTION__, __LINE__);
         }
     }
 
@@ -159,7 +160,7 @@ bool SerialIO::CloseSerialHandle() {
     if (handle_ == INVALID_HANDLE_VALUE) {
         return true;
     }
-    BOOL success = TryWin32(::CloseHandle(handle_), __FUNCTION__, __LINE__);
+    BOOL success = w32b::TryWin32(::CloseHandle(handle_), __FUNCTION__, __LINE__);
     handle_ = INVALID_HANDLE_VALUE;
     return success;
 }
