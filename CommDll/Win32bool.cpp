@@ -69,16 +69,16 @@ bool FormatMessage(
 	return !(number <= 0);
 }
 
-bool TryWin32(bool success, const char * function, int linenumber)
+bool TryWin32(BOOL success, const char * function, int linenumber)
 {
 	if (!success) {
 		DWORD dwLastError = ::GetLastError();
 		PrintErrorMsg(dwLastError, function, linenumber);
 	}
-	return success;
+	return success != FALSE;
 }
 
-bool TryWin32AsyncIO(bool success, const char * function, int linenumber)
+bool TryWin32AsyncIO(BOOL success, const char * function, int linenumber)
 {
 	if (!success) {
 		DWORD dwLastError = ::GetLastError();

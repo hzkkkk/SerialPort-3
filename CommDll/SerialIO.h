@@ -14,25 +14,25 @@ public:
     virtual ~SerialIO();
     bool Open(const TCHAR*, const TCHAR*);
     bool Close();
-    int ReadChunk(char**, int*, DWORD);
-    int Read(char*, DWORD, DWORD, DWORD*);
-    int Write(const char*, DWORD, DWORD, DWORD*);
-    enum {
-        IO_SUCCESS,
-        IO_TIME_OUT,
-        IO_ERROR,
+
+    enum code {
+        SUCCESS,
+        TIME_OUT,
+        FAIL,
     };
+
+    enum code ReadChunk(char**, int*, DWORD);
+    enum code Read(char*, DWORD, DWORD, DWORD*);
+    enum code Write(const char*, DWORD, DWORD, DWORD*);
 
 private:
     void operator=(const SerialIO&);
     bool IsInitialized();
-    bool CloseSerialHandle();
+	bool CloseResource();
 
     HANDLE handle_;
     OVERLAPPED readov_;
     OVERLAPPED writeov_;
-    CRITICAL_SECTION readlock_;
-    CRITICAL_SECTION writelock_;
 };
 #endif
 
