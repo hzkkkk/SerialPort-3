@@ -1,5 +1,5 @@
-#ifndef _SERIAL_IO_H_
-#define _SERIAL_IO_H_
+#ifndef _COMMDLL_SERIAL_IO_H_
+#define _COMMDLL_SERIAL_IO_H_
 
 #ifdef COMMDLL_EXPORTS
 #define DLLAPI __declspec(dllexport)
@@ -16,17 +16,18 @@ public:
 	bool Open(const TCHAR*, const TCHAR*);
 	bool Close();
 
-	enum code {
+	typedef enum code {
 		SUCCESS,
 		TIME_OUT,
 		FAIL,
-	};
+	} Result;
 
-	enum code ReadChunk(char**, int*, DWORD);
-	enum code Read(char*, DWORD, DWORD*, DWORD);
-	enum code Write(const char*, DWORD, DWORD*, DWORD);
+	Result ReadChunk(char**, int*, DWORD);
+	Result Read(char*, DWORD, DWORD*, DWORD);
+	Result Write(const char*, DWORD, DWORD*, DWORD);
 
 private:
+    SerialIO(const SerialIO&); 
 	void operator=(const SerialIO&);
 	bool IsInitialized();
 	bool CloseResource();

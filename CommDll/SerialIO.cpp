@@ -52,7 +52,7 @@ bool SerialIO::Close()
 	return  CloseResource();
 }
 
-enum SerialIO::code SerialIO::ReadChunk(char** lpBuffer, int* buflen, DWORD dwTimeoutMs)
+SerialIO::Result SerialIO::ReadChunk(char** lpBuffer, int* buflen, DWORD dwTimeoutMs)
 {
 	if (!IsInitialized()) {
 		return SerialIO::FAIL;
@@ -94,7 +94,7 @@ enum SerialIO::code SerialIO::ReadChunk(char** lpBuffer, int* buflen, DWORD dwTi
 	return result;
 }
 
-enum SerialIO::code SerialIO::Read(char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD* readlen, DWORD dwTimeoutMs)
+SerialIO::Result SerialIO::Read(char* lpBuffer, DWORD nNumberOfBytesToRead, DWORD* readlen, DWORD dwTimeoutMs)
 {
 	if (!IsInitialized()) {
 		return SerialIO::FAIL;
@@ -123,7 +123,7 @@ enum SerialIO::code SerialIO::Read(char* lpBuffer, DWORD nNumberOfBytesToRead, D
 	return SerialIO::FAIL;
 }
 
-enum SerialIO::code  SerialIO::Write(const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD* written, DWORD dwTimeoutMs)
+SerialIO::Result  SerialIO::Write(const char* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD* written, DWORD dwTimeoutMs)
 {
 	if (!IsInitialized()) {
 		return SerialIO::FAIL;

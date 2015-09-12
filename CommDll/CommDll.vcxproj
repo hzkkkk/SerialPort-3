@@ -165,7 +165,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SerialIO.cpp" />
-    <ClCompile Include="Win32bool.cpp" />
+    <ClCompile Include="Win32Bool.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

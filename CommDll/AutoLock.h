@@ -1,5 +1,5 @@
-#ifndef COMDLL_AUTOLOCK_H
-#define COMDLL_AUTOLOCK_H
+#ifndef _COMDLL_AUTOLOCK_H
+#define _COMDLL_AUTOLOCK_H
 
 class AutoLock
 {
