@@ -76,14 +76,15 @@ SerialIO::Result SerialIO::ReadChunk(char** lpBuffer, int* buflen, DWORD dwTimeo
 	}
 
 	char* buffer = NULL;
+	int to_read_len = min(INT_MAX - 1, stat.cbInQue);
 	if (success) {
-		buffer = new char[stat.cbInQue + 1];
+		buffer = new char[to_read_len + 1];
 		buffer[0] = c;
 	}
 
 	DWORD seconderead = 0;
-	if (success && stat.cbInQue > 0) {
-		if ((result = Read(buffer + 1, stat.cbInQue, &seconderead, 0)) != SerialIO::SUCCESS) {
+	if (success && to_read_len > 0) {
+		if ((result = Read(buffer + 1, to_read_len, &seconderead, 0)) != SerialIO::SUCCESS) {
 			success = false;
 		}
 	}
