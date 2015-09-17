@@ -18,6 +18,10 @@ SerialIO::~SerialIO()
 
 bool SerialIO::Open(const TCHAR* name, const TCHAR* param)
 {
+	if (IsInitialized()) {
+		return SerialIO::FAIL;
+	}
+
 	bool success = w32b::TryWin32(w32b::CreateEvent(NULL, FALSE, FALSE, NULL, &readov_.hEvent), __FUNCTION__, __LINE__);
 
 	if (success) {
@@ -58,39 +62,41 @@ SerialIO::Result SerialIO::ReadChunk(char** lpBuffer, int* buflen, DWORD dwTimeo
 		return SerialIO::FAIL;
 	}
 
-	bool success = true;
 	enum code result = SerialIO::SUCCESS;
 
 	DWORD firstread = 0;
 	char c = 0;
-	if ((result = Read(&c, 1, &firstread, dwTimeoutMs)) != SerialIO::SUCCESS) {
-		success = false;
-	}
+	result = Read(&c, 1, &firstread, dwTimeoutMs);
 
 	COMSTAT stat = { 0 };
 	DWORD dwErrors = 0;
-	if (success) {
-		if ((success = w32b::TryClearCommError(handle_, &dwErrors, &stat, __FUNCTION__, __LINE__)) == false) {
+	if (result == SerialIO::SUCCESS) {
+		if (!w32b::TryClearCommError(handle_, &dwErrors, &stat, __FUNCTION__, __LINE__)) {
 			result = SerialIO::FAIL;
 		}
 	}
 
 	char* buffer = NULL;
 	int to_read_len = min(INT_MAX - 1, stat.cbInQue);
-	if (success) {
+	if (result == SerialIO::SUCCESS) {
 		buffer = new char[to_read_len + 1];
 		buffer[0] = c;
 	}
 
 	DWORD seconderead = 0;
-	if (success && to_read_len > 0) {
-		if ((result = Read(buffer + 1, to_read_len, &seconderead, 0)) != SerialIO::SUCCESS) {
-			success = false;
-		}
+	if ((result == SerialIO::SUCCESS) && to_read_len > 0) {
+		result = Read(buffer + 1, to_read_len, &seconderead, 0);
 	}
 
-	*lpBuffer = success ? buffer : NULL;
-	*buflen = success ? firstread + seconderead : 0;
+	if (result != SerialIO::SUCCESS) {
+		delete[] buffer;
+		*lpBuffer = NULL;
+		*buflen = 0;
+	}
+	else {
+		*lpBuffer = buffer;
+		*buflen = firstread + seconderead;
+	}
 
 	return result;
 }
